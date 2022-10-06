@@ -87,13 +87,17 @@ def create_test_data_1(engine):
         print("Uli2  ", sandy_address)
 
 
-# pandas not yet compatible with future==True (sqlalchemy version >= 1.4)
+def test_pandas_read_write(engine):
+    # pandas not yet compatible with future==True (sqlalchemy version >= 1.4)
+    with Session(engine) as session:
+        df = pd.read_sql("user_account", engine, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
+        print(df)
+        df.to_sql('user_account', engine, if_exists='replace', index=False)
+        df = pd.read_sql("user_account", engine, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
+        print(df)
+
+
 engine = create_engine('sqlite:///foo.db', echo=True, future=False)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
 Base.metadata.create_all(engine)
 # create_test_data(engine)
-with Session(engine) as session:
-    df = pd.read_sql("user_account", engine, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
-    print(df)
-    df.to_sql('user_account', engine, if_exists='replace', index=False)
-    df = pd.read_sql("user_account", engine, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
-    print(df)
+test_pandas_read_write(engine)
