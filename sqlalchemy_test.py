@@ -12,7 +12,7 @@ import pandas
 
 Base = declarative_base()
 
-#test
+
 class User(Base):
     __tablename__ = "user_account"
     id = Column(Integer, primary_key=True)
