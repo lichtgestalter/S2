@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 import pandas as pd
 
-Base = declarative_base()  #ccccccccccc
+Base = declarative_base()  # creating the registry and declarative base classes - combined into one step. Base will serve as the base class for the ORM mapped classes we declare.
 
 
 class User(Base):
@@ -19,7 +19,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(30))
     fullname = Column(String)
-    addresses = relationship("Address", back_populates="user", cascade="all, delete-orphan")
+    addresses = relationship("Address", back_populates="user", cascade="all, delete-orphan")  # indicates to the ORM that these User and Address classes refer to each other in a one to many / many to one relationship.
 
     def __repr__(self):
         return f"User(id={self.id!r}, name={self.name!r}, fullname={self.fullname!r})"
@@ -30,7 +30,7 @@ class Address(Base):
     id = Column(Integer, primary_key=True)
     email_address = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey("user_account.id"), nullable=False)
-    user = relationship("User", back_populates="addresses")
+    user = relationship("User", back_populates="addresses")  # indicates to the ORM that these User and Address classes refer to each other in a one to many / many to one relationship.
 
     def __repr__(self):
         return f"Address(id={self.id}, email_address={self.email_address!r})"
@@ -56,8 +56,8 @@ class Aircraft(Base):
         return f"Aircraft({self.id=}, {self.max_cargo_weight=}, {self.registration=})"
 
 
-class Transporter(Base):
-    __tablename__ = "transporter"
+class Transport(Base):
+    __tablename__ = "transport"
     id = Column(Integer, primary_key=True)
     date = Column(Date)
     container = Column(Integer, ForeignKey("container.id"), nullable=False)
@@ -89,24 +89,27 @@ def create_test_data_1(engine):
 
 
 def test_pandas_read_write():
-    engine = create_engine('sqlite:///foo.db', echo=True, future=False)  # pandas not yet compatible with future==True (sqlalchemy version >= 1.4)
-    Base.metadata.create_all(engine)
+    old_engine = create_engine('sqlite:///foo.db', echo=True, future=False)  # pandas not yet compatible with future==True (sqlalchemy version >= 1.4)
+    Base.metadata.create_all(old_engine)
+    with Session(old_engine) as session:
+        df = pd.read_sql("user_account", old_engine, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
+        print(df)
+        df.to_sql('user_account', old_engine, if_exists='replace', index=False)
+        df = pd.read_sql("user_account", old_engine, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
+        print(df)
+
+
+def execute_text_example(engine):
     with Session(engine) as session:
-        df = pd.read_sql("user_account", engine, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
-        print(df)
-        df.to_sql('user_account', engine, if_exists='replace', index=False)
-        df = pd.read_sql("user_account", engine, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
-        print(df)
+        param_dic = {"param1": -2}  # This dictionary contains the parameters which will be used in the following SQL query.
+        sql_text = text("SELECT * FROM user_account WHERE id > :param1")
+        result = session.execute(sql_text, param_dic)
+        for row in result:
+            print(row)
 
-
-# create_test_data(engine)
-# test_pandas_read_write()
 
 engine = create_engine('sqlite:///foo.db', echo=True, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
 Base.metadata.create_all(engine)
-with Session(engine) as session:
-    result = session.execute(text("select * from user_account;"))
-    # result = session.execute(text("SELECT fullname FROM user_account;"))
-    for row in result:
-        print(row)
-    x = 0
+# create_test_data(engine)
+# test_pandas_read_write()
+execute_text_example(engine)
