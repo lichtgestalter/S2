@@ -99,7 +99,7 @@ def test_pandas_read_write():
         print(df)
 
 
-def execute_text_example(engine):
+def execute_text_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html
     with Session(engine) as session:
         param_dic = {"param1": -2}  # This dictionary contains the parameters which will be used in the following SQL query.
         sql_text = text("SELECT * FROM user_account WHERE id > :param1")
@@ -108,8 +108,25 @@ def execute_text_example(engine):
             print(row)
 
 
-engine = create_engine('sqlite:///foo.db', echo=True, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
+def select_SQL_Expression(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
+    with Session(engine) as session:
+        stmt = select(User)
+        stmt = select(User).where(User.name == "spongebob")
+        print("\nfor row in session.execute(select(User).where(User.name == 'spongebob')):")
+        for row in session.execute(select(User).where(User.name == "spongebob")):
+            print(row, type(row))
+        print("\nsession.scalars(select(User)).first()")
+        user = session.scalars(select(User)).first()
+        print(user, type(user))
+        print("\nsession.scalars(select(User))")
+        users = session.scalars(select(User))
+        for user in users:
+            print(user, type(user))
+
+
+engine = create_engine('sqlite:///foo.db', echo=False, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
 Base.metadata.create_all(engine)
 # create_test_data(engine)
 # test_pandas_read_write()
-execute_text_example(engine)
+# execute_text_example(engine)
+select_SQL_Expression(engine)
