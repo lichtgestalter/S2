@@ -9,6 +9,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy import update
+from sqlalchemy import delete
 import pandas as pd
 
 Base = declarative_base()  # creating the registry and declarative base classes - combined into one step. Base will serve as the base class for the ORM mapped classes we declare.
@@ -88,7 +90,7 @@ def create_test_data_1(engine):
         print("Uli2  ", sandy_address)
 
 
-def test_pandas_read_write():
+def pandas_read_write():
     old_engine = create_engine('sqlite:///foo.db', echo=True, future=False)  # pandas not yet compatible with future==True (sqlalchemy version >= 1.4)
     Base.metadata.create_all(old_engine)
     with Session(old_engine) as session:
@@ -99,7 +101,7 @@ def test_pandas_read_write():
         print(df)
 
 
-def execute_text_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html
+def select_text(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html
     with Session(engine) as session:
         param_dic = {"param1": -2}  # This dictionary contains the parameters which will be used in the following SQL query.
         sql_text = text("SELECT * FROM user_account WHERE id > :param1")
@@ -110,23 +112,64 @@ def execute_text_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/
 
 def select_SQL_Expression(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
     with Session(engine) as session:
-        stmt = select(User)
-        stmt = select(User).where(User.name == "spongebob")
+        # stmt = select(User)
+        # stmt = select(User).where(User.name == "spongebob")
         print("\nfor row in session.execute(select(User).where(User.name == 'spongebob')):")
         for row in session.execute(select(User).where(User.name == "spongebob")):
             print(row, type(row))
         print("\nsession.scalars(select(User)).first()")
         user = session.scalars(select(User)).first()
         print(user, type(user))
-        print("\nsession.scalars(select(User))")
-        users = session.scalars(select(User))
+        print("\nsession.scalars(select(User).where(User.id >= '4'))")
+        users = session.scalars(select(User).where(User.id >= "4"))  # very useful for converting into our data class
         for user in users:
             print(user, type(user))
+        print("\nsession.execute(select(User.name, User.fullname).where(User.id >= '4').where(User.name >= 's'))")
+        users = session.execute(select(User.name, User.fullname).where(User.id >= "4").where(User.name >= "s"))
+        for user in users:
+            print(user, type(user))
+        # print("[0]", users[0], type(users[0]))  # TypeError: 'ChunkedIteratorResult' object is not subscriptable
+
+def update_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
+    with Session(engine) as session:
+        print("\nsession.execute(update(User).where(User.id == 5).values(name='new name'))")
+        session.execute(update(User).where(User.id == 5).values(name="new name"))
+        # session.execute(update(User).where(User.id == 5).values(name="sandy"))
+        print("\nsession.scalars(select(User).where(User.id >= '0'))")
+        users = session.scalars(select(User).where(User.id >= "0"))  # very useful for converting into our data class
+        for user in users:
+            print(user, type(user))
+        # session.commit()  # makes changes permanent in database
+
+
+def delete_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-delete-statements
+    with Session(engine) as session:
+        print("\nsession.execute(delete(User).where(User.id == 5))")
+        session.execute(delete(User).where(User.id == 5))
+        print("\nsession.scalars(select(User).where(User.id >= '0'))")
+        users = session.scalars(select(User).where(User.id >= "0"))  # very useful for converting into our data class
+        for user in users:
+            print(user, type(user))
+        # session.commit()  # makes changes permanent in database
+
+
+def insert_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-delete-statements
+    with Session(engine) as session:
+        krabs = User(name="ehkrabs", fullname="Eugene H. Krabs")
+        squidward = User(name="squidward", fullname="Squidward Tentacles")
+        session.add(squidward)
+        session.add(krabs)
+        session.flush()
+        session.commit()  # makes changes permanent in database
 
 
 engine = create_engine('sqlite:///foo.db', echo=False, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
 Base.metadata.create_all(engine)
 # create_test_data(engine)
-# test_pandas_read_write()
-# execute_text_example(engine)
-select_SQL_Expression(engine)
+# pandas_read_write()
+select_text(engine)
+# select_SQL_Expression(engine)
+# update_example(engine)
+# delete_example(engine)
+insert_example(engine)
+select_text(engine)
