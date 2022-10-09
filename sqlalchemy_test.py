@@ -171,7 +171,7 @@ def insert_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_da
 
 engine = create_engine('sqlite:///foo2.db', echo=True, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
 Base.metadata.create_all(engine)
-# create_test_data_1(engine)
+create_test_data_1(engine)
 # pandas_read_write()
 select_text(engine)
 # select_SQL_Expression(engine)
