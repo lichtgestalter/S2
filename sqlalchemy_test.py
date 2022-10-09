@@ -71,23 +71,25 @@ class Transport(Base):
 
 def create_test_data_1(engine):
     with Session(engine) as session:
-        spongebob = User(name="spongebob", fullname="Spongebob Squarepants", addresses=[Address(email_address="spongebob@sqlalchemy.org")])
-        sandy = User(name="sandy", fullname="Sandy Cheeks", addresses=[Address(email_address="sandy@sqlalchemy.org"), Address(email_address="sandy@squirrelpower.org")])
-        patrick = User(name="patrick", fullname="Patrick Star")
+        spongebob = User(name="spongebob2", fullname="S2pongebob Squarepants", addresses=[Address(email_address="spongebob@sqlalchemy.org")])
+        sandy = User(name="sandy2", fullname="2Sandy Cheeks", addresses=[Address(email_address="sandy@sqlalchemy.org"), Address(email_address="sandy@squirrelpower.org")])
+        patrick = User(name="patrick2", fullname="2Patrick Star")
         session.add_all([spongebob, sandy, patrick])
+        # squidward = User(name="squidward", fullname="Squidward Tentacles")
+        # session.add_all([squidward])
         session.commit()
         # Simple SELECT
-        stmt = (select(User)
-                .where(User.name.in_(["spongebob", "sandy"])))
-        for user in session.scalars(stmt):
-            print("Uli1  ", user)
+        # stmt = (select(User)
+        #         .where(User.name.in_(["spongebob", "sandy"])))
+        # for user in session.scalars(stmt):
+        #     print("Uli1  ", user)
         # SELECT with JOIN
-        stmt = (select(Address)
-                .join(Address.user)
-                .where(User.name == "sandy")
-                .where(Address.email_address == "sandy@sqlalchemy.org"))
-        sandy_address = session.scalars(stmt).one()
-        print("Uli2  ", sandy_address)
+        # stmt = (select(Address)
+        #         .join(Address.user)
+        #         .where(User.name == "sandy")
+        #         .where(Address.email_address == "sandy@sqlalchemy.org"))
+        # sandy_address = session.scalars(stmt).one()
+        # print("Uli2  ", sandy_address)
 
 
 def pandas_read_write():
@@ -159,17 +161,21 @@ def insert_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_da
         squidward = User(name="squidward", fullname="Squidward Tentacles")
         session.add(squidward)
         session.add(krabs)
-        session.flush()
+        # session.flush()
         session.commit()  # makes changes permanent in database
+        users = session.scalars(select(User).where(User.id >= "-1"))  # very useful for converting into our data class
+        for user in users:
+            print(user, type(user))
 
 
-engine = create_engine('sqlite:///foo.db', echo=False, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
+
+engine = create_engine('sqlite:///foo2.db', echo=True, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
 Base.metadata.create_all(engine)
-# create_test_data(engine)
+# create_test_data_1(engine)
 # pandas_read_write()
 select_text(engine)
 # select_SQL_Expression(engine)
 # update_example(engine)
 # delete_example(engine)
-insert_example(engine)
-select_text(engine)
+# insert_example(engine)
+# select_text(engine)
