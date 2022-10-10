@@ -34,7 +34,7 @@ class Aircraft(Base):
     registration = Column(String)
 
     def __repr__(self):
-        return f"Aircraft({self.id=}, {self.max_cargo_weight=}, {self.registration=})"
+        return f"Aircraft({self.id=:4}, {self.max_cargo_weight=:6}, {self.registration=})"
 
 
 class Transport(Base):
@@ -48,27 +48,20 @@ class Transport(Base):
         return f"Transporter({self.id=}, {self.date=}, {self.container=}, {self.aircraft=})"
 
 
-def create_test_data_1(engine):
+def create_test_data_1():
     with Session(engine) as session:
         new_items = []
-        # container1 = Container(weight=1200, destination="Oslo")
-        # container2 = Container(weight=700, destination="Helsinki")
-        # container3 = Container(weight=1800, destination="Helsinki")
-        # container4 = Container(weight=1000, destination="Helsinki")
-        # aircraft1 = Aircraft(max_cargo_weight=2000, registration="OY-CBS")
-        # aircraft1 = Aircraft(max_cargo_weight=3000, registration="OY-THR")
         new_items.append(Container(weight=1200, destination="Oslo"))
         new_items.append(Container(weight=700, destination="Helsinki"))
         new_items.append(Container(weight=1800, destination="Helsinki"))
         new_items.append(Container(weight=1000, destination="Helsinki"))
         new_items.append(Aircraft(max_cargo_weight=2000, registration="OY-CBS"))
         new_items.append(Aircraft(max_cargo_weight=3000, registration="OY-THR"))
-        # session.add_all([container1, container2, container3, container4])
         session.add_all(new_items)
         session.commit()
 
 
-def select_container(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
+def select_container():  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
     with Session(engine) as session:
         print("\nsession.scalars(select(Container).where(Container.id >= '4'))")
         containers = session.scalars(select(Container))  # very useful for converting into our data class
@@ -79,7 +72,7 @@ def select_container(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/data
     return result
 
 
-def select_class(engine, classparam):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
+def select_all(classparam):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
     with Session(engine) as session:
         records = session.scalars(select(classparam))  # very useful for converting into our data class
         result = []
@@ -89,7 +82,13 @@ def select_class(engine, classparam):  # https://docs.sqlalchemy.org/en/14/tutor
     return result
 
 
-def update_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
+def get_record(classparam, id):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
+    with Session(engine) as session:
+        record = session.scalars(select(classparam).where(classparam.id == id)).first()  # very useful for converting into our data class
+    return record
+
+
+def update_example():  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
     with Session(engine) as session:
         print("\nsession.execute(update(Container).where(Container.id == 5).values(name='new name'))")
         session.execute(update(Container).where(Container.id == 5).values(name="new name"))
@@ -101,7 +100,7 @@ def update_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_da
         # session.commit()  # makes changes permanent in database
 
 
-def delete_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-delete-statements
+def delete_example():  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-delete-statements
     with Session(engine) as session:
         print("\nsession.execute(delete(Container).where(Container.id == 5))")
         session.execute(delete(Container).where(Container.id == 5))
@@ -113,7 +112,7 @@ def delete_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_da
         # session.commit()  # makes changes permanent in database
 
 
-def insert_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-delete-statements
+def insert_example():  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-delete-statements
     with Session(engine) as session:
         krabs = Container(name="ehkrabs", fullname="Eugene H. Krabs")
         squidward = Container(name="squidward", fullname="Squidward Tentacles")
@@ -126,11 +125,13 @@ def insert_example(engine):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_da
             print(container, type(container), type(containers))
 
 
-engine = create_engine(Database, echo=True, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
+engine = create_engine(Database, echo=False, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
 Base.metadata.create_all(engine)
 # create_test_data_1(engine)
-select_class(engine, Container)
-select_class(engine, Aircraft)
+# select_all(Container)
+# select_all(Aircraft)
+print(get_record(Container, 2))
+print(get_record(Aircraft, 2))
 # update_example(engine)
 # delete_example(engine)
 # insert_example(engine)
