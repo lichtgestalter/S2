@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import sqlite3
+import danskcargo_sql as dcsql
 
 
 def remove_selected():  # Remove Many records
@@ -31,109 +31,36 @@ def select_record(e):  # Select Record
 
 
 def update_record():
-    # Grab the record number
-    selected = my_tree.focus()
-    # Update record
-    my_tree.item(selected, text="", values=(entry_id.get(), entry_weight.get(), entry_destination.get(), address_entry.get(), city_entry.get(), state_entry.get(), zipcode_entry.get(),))
-
-    # Update the database
-    # Create a database or connect to one that exists
-    conn = sqlite3.connect('tree_crm.db')
-
-    # Create a cursor instance
-    c = conn.cursor()
-
-    c.execute("""UPDATE customers SET
-		first_name = :first,
-		last_name = :last,
-		address = :address,
-		city = :city,
-		state = :state,
-		zipcode = :zipcode
-
-		WHERE oid = :oid""",
-              {
-                  'first': entry_id.get(),
-                  'last': entry_weight.get(),
-                  'address': address_entry.get(),
-                  'city': city_entry.get(),
-                  'state': state_entry.get(),
-                  'zipcode': zipcode_entry.get(),
-                  'oid': entry_destination.get(),
-              })
-
-    # Commit changes
-    conn.commit()
-
-    # Close our connection
-    conn.close()
-
-    # Clear entry boxes
-    entry_id.delete(0, END)
-    entry_weight.delete(0, END)
-    entry_destination.delete(0, END)
-    address_entry.delete(0, END)
-    city_entry.delete(0, END)
-    state_entry.delete(0, END)
-    zipcode_entry.delete(0, END)
-
+    selected = my_tree.focus()  # Grab the record number
+    record = (entry_id.get(), entry_weight.get(), entry_destination.get(),)
+    my_tree.item(selected, text="", values=record)  # update treeview
+    # kode mangler  # Update database
+    # clear_entries()  # Clear entry boxes
+5
 
 # add new record to database
 def add_record():
-    # Update the database
-    # Create a database or connect to one that exists
-    conn = sqlite3.connect('tree_crm.db')
-
-    # Create a cursor instance
-    c = conn.cursor()
-
-    # Add New Record
-    c.execute("INSERT INTO customers VALUES (:first, :last, :id, :address, :city, :state, :zipcode)",
-              {
-                  'first': entry_id.get(),
-                  'last': entry_weight.get(),
-                  'id': entry_destination.get(),
-                  'address': address_entry.get(),
-                  'city': city_entry.get(),
-                  'state': state_entry.get(),
-                  'zipcode': zipcode_entry.get(),
-              })
-
-    # Commit changes
-    conn.commit()
-
-    # Close our connection
-    conn.close()
-
-    # Clear entry boxes
-    entry_id.delete(0, END)
-    entry_weight.delete(0, END)
-    entry_destination.delete(0, END)
-    address_entry.delete(0, END)
-    city_entry.delete(0, END)
-    state_entry.delete(0, END)
-    zipcode_entry.delete(0, END)
-
-    # Clear The Treeview Table
-    my_tree.delete(*my_tree.get_children())
-
-    # Run to pull data from database on start
-    # query_database()
+    record = (entry_id.get(), entry_weight.get(), entry_destination.get(),)
+    # kode mangler  # Update database
+    clear_entries()  # Clear entry boxes
+    my_tree.delete(*my_tree.get_children())  # Clear The Treeview Table
+    # kode mangler  # fill tree from database
 
 
-def data2table(data, tree):
+def data2table(tree):
     count = 0
-    for record in data:
+    result = dcsql.select_all(dcsql.Container)
+    for record in result:
         if count % 2 == 0:
-            tree.insert(parent='', index='end', iid=count, text='', values=(record[0], record[1], record[2]), tags=('evenrow',))
+            tree.insert(parent='', index='end', iid=count, text='', values=(record.id, record.weight, record.destination), tags=('evenrow',))
         else:
-            tree.insert(parent='', index='end', iid=count, text='', values=(record[0], record[1], record[2]), tags=('oddrow',))
-        # increment counter
+            tree.insert(parent='', index='end', iid=count, text='', values=(record.id, record.weight, record.destination), tags=('oddrow',))
         count += 1
 
 
 def empty_table(tree):
     tree.delete(*tree.get_children())
+
 
 root = Tk()
 root.title('AspIT S2: DanskCargo')
@@ -170,8 +97,6 @@ my_tree.heading("destination", text="Destination", anchor=CENTER)
 my_tree.tag_configure('oddrow', background="#dddddd")  # Create striped row tags
 my_tree.tag_configure('evenrow', background="#cccccc")
 
-data2table(data, my_tree)
-
 data_frame = LabelFrame(root, text="Record")  # Add record entry boxes
 data_frame.pack(fill="x", expand="yes", padx=20)
 
@@ -190,14 +115,11 @@ label_destination.grid(row=0, column=4, padx=10, pady=10)
 entry_destination = Entry(data_frame)
 entry_destination.grid(row=0, column=5, padx=10, pady=10)
 
-
-
-# Add Buttons
-button_frame = LabelFrame(root, text="Commands")
+button_frame = LabelFrame(root, text="Commands")  # Add Buttons
 button_frame.pack(fill="x", expand="yes", padx=20)
 
-# update_button = Button(button_frame, text="Update Record", command=empty_table(my_tree))#update_record)
-# update_button.grid(row=0, column=0, padx=10, pady=10)
+update_button = Button(button_frame, text="Update Record", command=update_record)
+update_button.grid(row=0, column=0, padx=10, pady=10)
 
 add_button = Button(button_frame, text="Add Record", command=add_record)
 add_button.grid(row=0, column=1, padx=10, pady=10)
@@ -223,7 +145,7 @@ select_record_button.grid(row=0, column=7, padx=10, pady=10)
 # Bind the treeview
 # my_tree.bind("", select_record)
 
-# Run to pull data from database on start
-# query_database()
 
+empty_table(my_tree)
+data2table(my_tree)
 root.mainloop()
