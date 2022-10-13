@@ -1,6 +1,5 @@
-from tkinter import *
+import tkinter as tk
 from tkinter import ttk
-# from tkinter.ttk import *
 # from tkinter import messagebox
 import danskcargo_sql as dcsql
 
@@ -10,9 +9,9 @@ def read_container_entries():
 
 
 def delete_container_entries():  # Clear entry boxes
-    entry_id.delete(0, END)
-    entry_weight.delete(0, END)
-    entry_destination.delete(0, END)
+    entry_id.delete(0, tk.END)
+    entry_weight.delete(0, tk.END)
+    entry_destination.delete(0, tk.END)
 
 
 def write_container_entries(values):  # Fill entry boxes
@@ -88,7 +87,7 @@ def refresh_container():  # Refresh treeview table
     read_container()  # Fill treeview from database
 
 
-root = Tk()
+root = tk.Tk()
 root.title('AspIT S2: DanskCargo')
 root.iconbitmap('AspIT.ico')
 root.geometry("1000x500")  # window size
@@ -98,67 +97,67 @@ style.theme_use('default')  # Pick theme
 style.configure("Treeview", background="#D3D3D3", foreground="black", rowheight=25, fieldbackground="#D3D3D3")  # Configure treeview colors
 style.map('Treeview', background=[('selected', "#206030")])  # Change selected color in treeview
 
-frame_container = LabelFrame(root, text="Container")    # https://www.tutorialspoint.com/python/tk_labelframe.htm
+frame_container = tk.LabelFrame(root, text="Container")    # https://www.tutorialspoint.com/python/tk_labelframe.htm
 frame_container.grid(row=0, column=0, padx=10, pady=10)  # https://www.tutorialspoint.com/python/tk_grid.htm
 
-tree_frame_container = Frame(frame_container)  # Create treeview frame
+tree_frame_container = tk.Frame(frame_container)  # Create treeview frame
 tree_frame_container.grid(row=0, column=0, padx=10, pady=10)
-tree_scroll_container = Scrollbar(tree_frame_container)  # Create treeview scrollbar
+tree_scroll_container = tk.Scrollbar(tree_frame_container)  # Create treeview scrollbar
 tree_scroll_container.grid(row=0, column=1, padx=0, pady=10, sticky='ns')
 tree_container = ttk.Treeview(tree_frame_container, yscrollcommand=tree_scroll_container.set, selectmode="extended")  # Create treeview
 tree_container.grid(row=0, column=0, padx=0, pady=10)
 tree_scroll_container.config(command=tree_container.yview)  # Configure scrollbar
 
 tree_container['columns'] = ("id", "weight", "destination")  # Define columns
-tree_container.column("#0", width=0, stretch=NO)  # Format columns
-tree_container.column("id", anchor=E, width=40)
-tree_container.column("weight", anchor=E, width=80)
-tree_container.column("destination", anchor=W, width=200)
-tree_container.heading("#0", text="", anchor=W)  # Create headings
-tree_container.heading("id", text="Id", anchor=CENTER)
-tree_container.heading("weight", text="Weight", anchor=CENTER)
-tree_container.heading("destination", text="Destination", anchor=CENTER)
+tree_container.column("#0", width=0, stretch=tk.NO)  # Format columns
+tree_container.column("id", anchor=tk.E, width=40)
+tree_container.column("weight", anchor=tk.E, width=80)
+tree_container.column("destination", anchor=tk.W, width=200)
+tree_container.heading("#0", text="", anchor=tk.W)  # Create headings
+tree_container.heading("id", text="Id", anchor=tk.CENTER)
+tree_container.heading("weight", text="Weight", anchor=tk.CENTER)
+tree_container.heading("destination", text="Destination", anchor=tk.CENTER)
 
 tree_container.tag_configure('oddrow', background="#dddddd")  # Create striped row tags
 tree_container.tag_configure('evenrow', background="#cccccc")
 
-controls_frame_container = LabelFrame(frame_container, bd=0)
+controls_frame_container = tk.LabelFrame(frame_container, bd=0)
 controls_frame_container.grid(row=3, column=0, padx=10, pady=10)
 
-edit_frame_container = LabelFrame(controls_frame_container, bd=0)  # Add record entry boxes
+edit_frame_container = tk.LabelFrame(controls_frame_container, bd=0)  # Add record entry boxes
 edit_frame_container.grid(row=0, column=0, padx=10, pady=10)
 
-label_id = Label(edit_frame_container, text="Id")
+label_id = tk.Label(edit_frame_container, text="Id")
 label_id.grid(row=0, column=0, padx=10, pady=0)
-entry_id = Entry(edit_frame_container, width=6)  # https://www.tutorialspoint.com/python/tk_entry.htm
+entry_id = tk.Entry(edit_frame_container, width=6)  # https://www.tutorialspoint.com/python/tk_entry.htm
 entry_id.grid(row=1, column=0, padx=10, pady=10)
 
-label_weight = Label(edit_frame_container, text="Weight")
+label_weight = tk.Label(edit_frame_container, text="Weight")
 label_weight.grid(row=0, column=1, padx=10, pady=0)
-entry_weight = Entry(edit_frame_container, width=8)
+entry_weight = tk.Entry(edit_frame_container, width=8)
 entry_weight.grid(row=1, column=1, padx=10, pady=0)
 
-label_destination = Label(edit_frame_container, text="Destination")
+label_destination = tk.Label(edit_frame_container, text="Destination")
 label_destination.grid(row=0, column=2, padx=10, pady=0)
-entry_destination = Entry(edit_frame_container, width=20)
+entry_destination = tk.Entry(edit_frame_container, width=20)
 entry_destination.grid(row=1, column=2, padx=10, pady=0)
 
-button_frame_container = LabelFrame(controls_frame_container, bd=0)  # Add Buttons
+button_frame_container = tk.LabelFrame(controls_frame_container, bd=0)  # Add Buttons
 button_frame_container.grid(row=1, column=0, padx=10, pady=0)
 
-button_edit_container = Button(button_frame_container, text="Edit", command=edit_container)
+button_edit_container = tk.Button(button_frame_container, text="Edit", command=edit_container)
 button_edit_container.grid(row=0, column=0, padx=10, pady=10)
 
-button_update_container = Button(button_frame_container, text="Update", command=update_container)
+button_update_container = tk.Button(button_frame_container, text="Update", command=update_container)
 button_update_container.grid(row=0, column=1, padx=10, pady=10)
 
-button_create_container = Button(button_frame_container, text="Create", command=create_container)
+button_create_container = tk.Button(button_frame_container, text="Create", command=create_container)
 button_create_container.grid(row=0, column=2, padx=10, pady=10)
 
-button_delete_container = Button(button_frame_container, text="Delete", command=delete_container)
+button_delete_container = tk.Button(button_frame_container, text="Delete", command=delete_container)
 button_delete_container.grid(row=0, column=3, padx=10, pady=10)
 
-select_record_button = Button(button_frame_container, text="Clear Entry Boxes", command=delete_container_entries)
+select_record_button = tk.Button(button_frame_container, text="Clear Entry Boxes", command=delete_container_entries)
 select_record_button.grid(row=0, column=4, padx=10, pady=10)
 
 refresh_container()
