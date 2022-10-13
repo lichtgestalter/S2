@@ -98,8 +98,8 @@ style.theme_use('default')  # Pick theme
 style.configure("Treeview", background="#D3D3D3", foreground="black", rowheight=25, fieldbackground="#D3D3D3")  # Configure treeview colors
 style.map('Treeview', background=[('selected', "#206030")])  # Change selected color in treeview
 
-frame_container = Frame(root)  # Create treeview frame
-frame_container.grid(row=0, column=0, padx=10, pady=10)
+frame_container = LabelFrame(root, text="Container")    # https://www.tutorialspoint.com/python/tk_labelframe.htm
+frame_container.grid(row=0, column=0, padx=10, pady=10)  # https://www.tutorialspoint.com/python/tk_grid.htm
 
 tree_frame_container = Frame(frame_container)  # Create treeview frame
 tree_frame_container.grid(row=0, column=0, padx=10, pady=10)
@@ -122,7 +122,7 @@ tree_container.heading("destination", text="Destination", anchor=CENTER)
 tree_container.tag_configure('oddrow', background="#dddddd")  # Create striped row tags
 tree_container.tag_configure('evenrow', background="#cccccc")
 
-controls_frame_container = LabelFrame(frame_container, text="Container")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
+controls_frame_container = LabelFrame(frame_container, bd=0)
 controls_frame_container.grid(row=3, column=0, padx=10, pady=10)
 
 edit_frame_container = LabelFrame(controls_frame_container, bd=0)  # Add record entry boxes
@@ -130,17 +130,17 @@ edit_frame_container.grid(row=0, column=0, padx=10, pady=10)
 
 label_id = Label(edit_frame_container, text="Id")
 label_id.grid(row=0, column=0, padx=10, pady=0)
-entry_id = Entry(edit_frame_container)
+entry_id = Entry(edit_frame_container, width=6)  # https://www.tutorialspoint.com/python/tk_entry.htm
 entry_id.grid(row=1, column=0, padx=10, pady=10)
 
 label_weight = Label(edit_frame_container, text="Weight")
 label_weight.grid(row=0, column=1, padx=10, pady=0)
-entry_weight = Entry(edit_frame_container)
+entry_weight = Entry(edit_frame_container, width=8)
 entry_weight.grid(row=1, column=1, padx=10, pady=0)
 
 label_destination = Label(edit_frame_container, text="Destination")
 label_destination.grid(row=0, column=2, padx=10, pady=0)
-entry_destination = Entry(edit_frame_container)
+entry_destination = Entry(edit_frame_container, width=20)
 entry_destination.grid(row=1, column=2, padx=10, pady=0)
 
 button_frame_container = LabelFrame(controls_frame_container, bd=0)  # Add Buttons
