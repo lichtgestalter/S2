@@ -43,6 +43,14 @@ def edit_container():  # Select record
     write_container_entries(values)
 
 
+def create_container():  # add new record to database
+    record = read_container_entries()
+    container = tuple2container(record)
+    dcsql.create_container(container)  # Update database
+    delete_container_entries()  # Clear entry boxes
+    refresh_container()
+
+
 def update_container():
     record = read_container_entries()
     container = tuple2container(record)
@@ -51,10 +59,10 @@ def update_container():
     refresh_container()
 
 
-def create_container():  # add new record to database
+def delete_container():
     record = read_container_entries()
     container = tuple2container(record)
-    dcsql.create_container(container)  # Update database
+    dcsql.delete_container(container)  # Update database
     delete_container_entries()  # Clear entry boxes
     refresh_container()
 
@@ -137,8 +145,11 @@ button_edit_container.grid(row=0, column=1, padx=10, pady=10)
 button_update_container = Button(button_frame, text="Update Container", command=update_container)
 button_update_container.grid(row=0, column=3, padx=10, pady=10)
 
-button_create = Button(button_frame, text="Create Container", command=create_container)
-button_create.grid(row=0, column=5, padx=10, pady=10)
+button_create_container = Button(button_frame, text="Create Container", command=create_container)
+button_create_container.grid(row=0, column=4, padx=10, pady=10)
+
+button_delete_container = Button(button_frame, text="Delete Container", command=delete_container)
+button_delete_container.grid(row=0, column=5, padx=10, pady=10)
 
 remove_all_button = Button(button_frame, text="Remove Selected", command=remove_selected_container)
 remove_all_button.grid(row=0, column=7, padx=10, pady=10)

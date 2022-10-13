@@ -117,6 +117,12 @@ def create_container(container):  # https://docs.sqlalchemy.org/en/14/tutorial/o
         session.commit()  # makes changes permanent in database
 
 
+def delete_container(container):
+    with Session(engine) as session:
+        session.execute(delete(Container).where(Container.id == container.id))
+        session.commit()  # makes changes permanent in database
+
+
 def delete_example():  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-delete-statements
     with Session(engine) as session:
         print("\nsession.execute(delete(Container).where(Container.id == 5))")
