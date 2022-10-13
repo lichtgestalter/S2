@@ -104,6 +104,19 @@ def update_example():  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_man
         # session.commit()  # makes changes permanent in database
 
 
+def update_container(container):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
+    with Session(engine) as session:
+        session.execute(update(Container).where(Container.id == container.id).values(weight=container.weight, destination=container.destination))
+        session.commit()  # makes changes permanent in database
+
+
+def create_container(container):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
+    with Session(engine) as session:
+        container.id = None
+        session.add(container)
+        session.commit()  # makes changes permanent in database
+
+
 def delete_example():  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-delete-statements
     with Session(engine) as session:
         print("\nsession.execute(delete(Container).where(Container.id == 5))")
