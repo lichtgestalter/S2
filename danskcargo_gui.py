@@ -55,7 +55,7 @@ def update_container():  # update record in database
 def delete_container():  # delete record in database
     record = read_container_entries()  # Read content of entry boxes
     container = tuple2container(record)  # Convert tuple to Container
-    dcsql.delete_container(container)  # Update database
+    dcsql.delete_soft_container(container)  # Update database
     clear_container_entries()  # Clear entry boxes
     refresh_container()  # Refresh treeview table
 
@@ -64,11 +64,12 @@ def read_container():  # fill tree from database
     count = 0  # Used to keep track of odd and even rows, because these will be colored differently.
     result = dcsql.select_all(dcsql.Container)  # Read all containers from database
     for record in result:
-        if count % 2 == 0:  # even
-            tree_container.insert(parent='', index='end', iid=str(count), text='', values=container2tuple(record), tags=('evenrow',))  # Insert one row into the data table
-        else:  # odd
-            tree_container.insert(parent='', index='end', iid=str(count), text='', values=container2tuple(record), tags=('oddrow',))  # Insert one row into the data table
-        count += 1
+        if record.weight >= 0:  # this condition excludes soft deleted records from being shown in the data table
+            if count % 2 == 0:  # even
+                tree_container.insert(parent='', index='end', iid=str(count), text='', values=container2tuple(record), tags=('evenrow',))  # Insert one row into the data table
+            else:  # odd
+                tree_container.insert(parent='', index='end', iid=str(count), text='', values=container2tuple(record), tags=('oddrow',))  # Insert one row into the data table
+            count += 1
 
 
 def empty_table(tree):  # Clear treeview table

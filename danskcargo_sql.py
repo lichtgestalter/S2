@@ -117,9 +117,15 @@ def create_container(container):  # https://docs.sqlalchemy.org/en/14/tutorial/o
         session.commit()  # makes changes permanent in database
 
 
-def delete_container(container):
+def delete_hard_container(container):
     with Session(engine) as session:
         session.execute(delete(Container).where(Container.id == container.id))
+        session.commit()  # makes changes permanent in database
+
+
+def delete_soft_container(container):
+    with Session(engine) as session:
+        session.execute(update(Container).where(Container.id == container.id).values(weight=-1, destination=container.destination))
         session.commit()  # makes changes permanent in database
 
 

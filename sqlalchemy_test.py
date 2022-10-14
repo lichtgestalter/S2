@@ -38,37 +38,6 @@ class Address(Base):
         return f"Address(id={self.id}, email_address={self.email_address!r})"
 
 
-class Container(Base):
-    __tablename__ = "container"
-    id = Column(Integer, primary_key=True)
-    weight = Column(Integer)
-    destination = Column(String)
-
-    def __repr__(self):
-        return f"Container({self.id=}, {self.weight=}, {self.destination=})"
-
-
-class Aircraft(Base):
-    __tablename__ = "aircraft"
-    id = Column(Integer, primary_key=True)
-    max_cargo_weight = Column(Integer)
-    registration = Column(String)
-
-    def __repr__(self):
-        return f"Aircraft({self.id=}, {self.max_cargo_weight=}, {self.registration=})"
-
-
-class Transport(Base):
-    __tablename__ = "transport"
-    id = Column(Integer, primary_key=True)
-    date = Column(Date)
-    container = Column(Integer, ForeignKey("container.id"), nullable=False)
-    aircraft = Column(Integer, ForeignKey("aircraft.id"), nullable=False)
-
-    def __repr__(self):
-        return f"Transporter({self.id=}, {self.date=}, {self.container=}, {self.aircraft=})"
-
-
 def create_test_data_1(engine):
     with Session(engine) as session:
         spongebob = User(name="spongebob2", fullname="S2pongebob Squarepants", addresses=[Address(email_address="spongebob@sqlalchemy.org")])
@@ -93,7 +62,7 @@ def create_test_data_1(engine):
 
 
 def pandas_read_write():
-    old_engine = create_engine('sqlite:///foo.db', echo=True, future=False)  # pandas not yet compatible with future==True (sqlalchemy version >= 1.4)
+    old_engine = create_engine('sqlite:///foo2.db', echo=True, future=False)  # pandas not yet compatible with future==True (sqlalchemy version >= 1.4)
     Base.metadata.create_all(old_engine)
     with Session(old_engine) as session:
         df = pd.read_sql("user_account", old_engine, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
