@@ -24,17 +24,6 @@ def create_test_data_1():
         session.commit()
 
 
-# def select_container():  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
-#     with Session(engine) as session:
-#         print("\nsession.scalars(select(Container).where(Container.id >= '4'))")
-#         containers = session.scalars(select(Container))  # very useful for converting into our data class
-#         result = []
-#         for container in containers:
-#             print(container)
-#             result.append(container)
-#     return result
-
-
 def select_all(classparam):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
     with Session(engine) as session:
         records = session.scalars(select(classparam))  # very useful for converting into our data class
@@ -51,28 +40,18 @@ def get_record(classparam, record_id):  # https://docs.sqlalchemy.org/en/14/tuto
     return record
 
 
-# def update_example():  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
-#     with Session(engine) as session:
-#         print("\nsession.execute(update(Container).where(Container.id == 5).values(name='new name'))")
-#         session.execute(update(Container).where(Container.id == 5).values(name="new name"))
-#         # session.execute(update(Container).where(Container.id == 5).values(name="sandy"))
-#         print("\nsession.scalars(select(Container).where(Container.id >= '0'))")
-#         containers = session.scalars(select(Container).where(Container.id >= "0"))  # very useful for converting into our data class
-#         for container in containers:
-#             print(container, type(container))
-#         # session.commit()  # makes changes permanent in database
+def create_record(record):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
+    with Session(engine) as session:
+        record.id = None
+        session.add(record)
+        session.commit()  # makes changes permanent in database
 
+
+# region container
 
 def update_container(container):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
     with Session(engine) as session:
         session.execute(update(Container).where(Container.id == container.id).values(weight=container.weight, destination=container.destination))
-        session.commit()  # makes changes permanent in database
-
-
-def create_container(container):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
-    with Session(engine) as session:
-        container.id = None
-        session.add(container)
         session.commit()  # makes changes permanent in database
 
 
@@ -86,6 +65,72 @@ def delete_soft_container(container):
     with Session(engine) as session:
         session.execute(update(Container).where(Container.id == container.id).values(weight=-1, destination=container.destination))
         session.commit()  # makes changes permanent in database
+
+
+# endregion container
+
+# region aircraft
+
+def update_aircraft(aircraft):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
+    with Session(engine) as session:
+        session.execute(update(Aircraft).where(Aircraft.id == aircraft.id).values(max_cargo_weight=aircraft.max_cargo_weight, registration=aircraft.registration))
+        session.commit()  # makes changes permanent in database
+
+
+def delete_hard_aircraft(aircraft):
+    with Session(engine) as session:
+        session.execute(delete(Aircraft).where(Aircraft.id == aircraft.id))
+        session.commit()  # makes changes permanent in database
+
+
+def delete_soft_aircraft(aircraft):
+    with Session(engine) as session:
+        session.execute(update(Aircraft).where(Aircraft.id == aircraft.id).values(max_cargo_weight=-1, registration=aircraft.registration))
+        session.commit()  # makes changes permanent in database
+
+
+# endregion aircraft
+
+# region transport
+
+
+def update_transport(transport):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
+    with Session(engine) as session:
+        session.execute(update(Transport).where(Transport.id == transport.id).values(date=transport.date, container_id=transport.container_id, aircraft_id=transport.aircraft_id))
+        session.commit()  # makes changes permanent in database
+
+
+def delete_hard_transport(transport):
+    with Session(engine) as session:
+        session.execute(delete(Transport).where(Transport.id == transport.id))
+        session.commit()  # makes changes permanent in database
+
+
+# endregion transport
+
+# region examples
+
+# def select_container():  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
+#     with Session(engine) as session:
+#         print("\nsession.scalars(select(Container).where(Container.id >= '4'))")
+#         containers = session.scalars(select(Container))  # very useful for converting into our data class
+#         result = []
+#         for container in containers:
+#             print(container)
+#             result.append(container)
+#     return result
+
+
+# def update_example():  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
+#     with Session(engine) as session:
+#         print("\nsession.execute(update(Container).where(Container.id == 5).values(name='new name'))")
+#         session.execute(update(Container).where(Container.id == 5).values(name="new name"))
+#         # session.execute(update(Container).where(Container.id == 5).values(name="sandy"))
+#         print("\nsession.scalars(select(Container).where(Container.id >= '0'))")
+#         containers = session.scalars(select(Container).where(Container.id >= "0"))  # very useful for converting into our data class
+#         for container in containers:
+#             print(container, type(container))
+#         # session.commit()  # makes changes permanent in database
 
 
 # def delete_example():  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-delete-statements
@@ -112,6 +157,7 @@ def delete_soft_container(container):
 #         for container in containers:
 #             print(container, type(container), type(containers))
 
+# endregion examples
 
 if __name__ == "__main__":
     # Executed when invoked directly
@@ -131,4 +177,3 @@ else:
     # Executed when imported
     engine = create_engine(Database, echo=False, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
     Base.metadata.create_all(engine)
-

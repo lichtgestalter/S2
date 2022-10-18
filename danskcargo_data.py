@@ -35,6 +35,15 @@ class Aircraft(Base):
         return f"Aircraft ({self.id=:4},   {self.max_cargo_weight=:6},  {self.registration=})"
 
 
+def aircraft2tuple(record):  # Convert aircraft to tuple
+    return record.id, record.max_cargo_weight, record.registration
+
+
+def tuple2aircraft(record):  # Convert tuple to aircraft
+    aircraft = Aircraft(id=record[0], max_cargo_weight=record[1], registration=record[2])
+    return aircraft
+
+
 class Transport(Base):
     __tablename__ = "transport"
     id = Column(Integer, primary_key=True)
@@ -44,3 +53,12 @@ class Transport(Base):
 
     def __repr__(self):
         return f"Transporter({self.id=}, {self.date=}, {self.container_id=}, {self.aircraft_id=})"
+
+
+def transport2tuple(record):  # Convert transport to tuple
+    return record.id, record.date, record.container_id, record.aircraft_id
+
+
+def tuple2transport(record):  # Convert tuple to transport
+    transport = Transport(id=record[0], date=record[1], container_id=record[2], aircraft_id=record[3])
+    return transport

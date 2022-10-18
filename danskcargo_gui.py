@@ -3,7 +3,7 @@ from tkinter import ttk
 import danskcargo_data
 import danskcargo_sql as dcsql
 
-
+next: gui for aircraft and transport
 # region container
 def read_container_entries():  # Read content of entry boxes
     return entry_id.get(), entry_weight.get(), entry_destination.get(),
@@ -30,7 +30,7 @@ def edit_container(event, tree):  # Copy selected record into entry boxes. Param
 
 def create_container(tree, record):  # add new record to database
     container = danskcargo_data.tuple2container(record)  # Convert tuple to Container
-    dcsql.create_container(container)  # Update database
+    dcsql.create_record(container)  # Update database
     clear_container_entries()  # Clear entry boxes
     refresh_treeview(tree)  # Refresh treeview table
 
