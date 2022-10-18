@@ -29,10 +29,10 @@ def tuple2container(record):  # Convert tuple to Container
     return container
 
 
-def edit_container():  # Copy selected record into entry boxes
-    clear_container_entries()  # Clear entry boxes
+def edit_container(event):  # Copy selected record into entry boxes
     index_selected = tree_container.focus()  # Index of selected record
     values = tree_container.item(index_selected, 'values')  # Values of selected record
+    clear_container_entries()  # Clear entry boxes
     write_container_entries(values)  # Fill entry boxes
 
 
@@ -72,18 +72,24 @@ def read_container():  # fill tree from database
             count += 1
 
 
-def empty_table(tree):  # Clear treeview table
-    tree.delete(*tree.get_children())
-
-
 def refresh_container():  # Refresh treeview table
     empty_table(tree_container)  # Clear treeview table
     read_container()  # Fill treeview from database
 
 
+def empty_table(tree):  # Clear treeview table
+    tree.delete(*tree.get_children())
+
+
+# define global constants
 padx = 8  # Horizontal distance to neighboring objects
 pady = 4  # Vertical distance to neighboring objects
-rowheight = 24  # rowheight in data tables
+rowheight = 24  # rowheight in treeview
+treeview_background = "#D3D3D3"  # Define color of background in treeview
+treeview_foreground = "black"  # Define color of foreground in treeview
+treeview_selected = "#206030"  # Define color of selected row in treeview
+oddrow = "#dddddd"
+evenrow = "#cccccc"
 
 root = tk.Tk()  # Define the main window
 root.title('AspIT S2: DanskCargo')  # Text shown in the top window bar
@@ -94,8 +100,8 @@ style = ttk.Style()  # Add style
 style.theme_use('default')  # Pick theme
 
 # Configure treeview colors and formatting. A treeview is an object that can contain a data table.
-style.configure("Treeview", background="#D3D3D3", foreground="black", rowheight=rowheight, fieldbackground="#D3D3D3")
-style.map('Treeview', background=[('selected', "#206030")])  # Define color of selected row in treeview
+style.configure("Treeview", background=treeview_background, foreground=treeview_foreground, rowheight=rowheight, fieldbackground=treeview_background)
+style.map('Treeview', background=[('selected', treeview_selected)])  # Define color of selected row in treeview
 
 # Define Labelframe which contains all container related GUI objects (data table, labels, buttons, ...)
 frame_container = tk.LabelFrame(root, text="Container")    # https://www.tutorialspoint.com/python/tk_labelframe.htm
@@ -120,8 +126,10 @@ tree_container.heading("#0", text="", anchor=tk.W)  # Create column headings
 tree_container.heading("id", text="Id", anchor=tk.CENTER)
 tree_container.heading("weight", text="Weight", anchor=tk.CENTER)
 tree_container.heading("destination", text="Destination", anchor=tk.CENTER)
-tree_container.tag_configure('oddrow', background="#dddddd")  # Create tags for rows in 2 different colors
-tree_container.tag_configure('evenrow', background="#cccccc")
+tree_container.tag_configure('oddrow', background=oddrow)  # Create tags for rows in 2 different colors
+tree_container.tag_configure('evenrow', background=evenrow)
+
+tree_container.bind("<ButtonRelease-1>", edit_container)  # Define function to be called, when an item is selected.
 
 # Define Frame which contains labels, entries and buttons
 controls_frame_container = tk.Frame(frame_container)
@@ -130,17 +138,17 @@ controls_frame_container.grid(row=3, column=0, padx=padx, pady=pady)
 # Define Frame which contains labels (text fields) and entries (input fields)
 edit_frame_container = tk.Label(controls_frame_container)  # Add record entry boxes
 edit_frame_container.grid(row=0, column=0, padx=padx, pady=pady)
-
+# label and entry for container id
 label_id = tk.Label(edit_frame_container, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
 label_id.grid(row=0, column=0, padx=padx, pady=pady)
 entry_id = tk.Entry(edit_frame_container, width=6)  # https://www.tutorialspoint.com/python/tk_entry.htm
 entry_id.grid(row=1, column=0, padx=padx, pady=pady)
-
+# label and entry for container weight
 label_weight = tk.Label(edit_frame_container, text="Weight")
 label_weight.grid(row=0, column=1, padx=padx, pady=pady)
 entry_weight = tk.Entry(edit_frame_container, width=8)
 entry_weight.grid(row=1, column=1, padx=padx, pady=pady)
-
+# label and entry for container destination
 label_destination = tk.Label(edit_frame_container, text="Destination")
 label_destination.grid(row=0, column=2, padx=padx, pady=pady)
 entry_destination = tk.Entry(edit_frame_container, width=20)
@@ -149,13 +157,11 @@ entry_destination.grid(row=1, column=2, padx=padx, pady=pady)
 # Define Frame which contains buttons
 button_frame_container = tk.Label(controls_frame_container)
 button_frame_container.grid(row=1, column=0, padx=padx, pady=pady)
-
-button_edit_container = tk.Button(button_frame_container, text="Edit", command=edit_container)  # Define Buttons
-button_edit_container.grid(row=0, column=0, padx=padx, pady=pady)
-button_update_container = tk.Button(button_frame_container, text="Update", command=update_container)
-button_update_container.grid(row=0, column=1, padx=padx, pady=pady)
+# Define buttons
 button_create_container = tk.Button(button_frame_container, text="Create", command=create_container)
-button_create_container.grid(row=0, column=2, padx=padx, pady=pady)
+button_create_container.grid(row=0, column=1, padx=padx, pady=pady)
+button_update_container = tk.Button(button_frame_container, text="Update", command=update_container)
+button_update_container.grid(row=0, column=2, padx=padx, pady=pady)
 button_delete_container = tk.Button(button_frame_container, text="Delete", command=delete_container)
 button_delete_container.grid(row=0, column=3, padx=padx, pady=pady)
 select_record_button = tk.Button(button_frame_container, text="Clear Entry Boxes", command=clear_container_entries)
