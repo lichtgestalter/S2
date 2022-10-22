@@ -4,7 +4,7 @@ import danskcargo_data
 import danskcargo_sql as dcsql
 
 
-# region container
+# region container functions
 def read_container_entries():  # Read content of entry boxes
     return entry_container_id.get(), entry_container_weight.get(), entry_container_destination.get(),
 
@@ -53,18 +53,17 @@ def read_table(tree, class_):  # fill tree from database
     count = 0  # Used to keep track of odd and even rows, because these will be colored differently.
     result = dcsql.select_all(class_)  # Read all containers from database
     for record in result:
-next        if record.weight >= 0:  # this condition excludes soft deleted records from being shown in the data table
+        if record.valid():  # this condition excludes soft deleted records from being shown in the data table
             if count % 2 == 0:  # even
-                tree.insert(parent='', index='end', iid=str(count), text='', values=danskcargo_data.container2tuple(record), tags=('evenrow',))  # Insert one row into the data table
+                tree.insert(parent='', index='end', iid=str(count), text='', values=record.convert2tuple(), tags=('evenrow',))  # Insert one row into the data table
             else:  # odd
-                tree.insert(parent='', index='end', iid=str(count), text='', values=danskcargo_data.container2tuple(record), tags=('oddrow',))  # Insert one row into the data table
+                tree.insert(parent='', index='end', iid=str(count), text='', values=record.convert2tuple(), tags=('oddrow',))  # Insert one row into the data table
             count += 1
 
-# endregion container
 
-# region aircraft
+# endregion container functions
 
-
+# region aircraft functions
 def read_aircraft_entries():  # Read content of entry boxes
     return entry_aircraft_id.get(), entry_aircraft_max_cargo_weight.get(), entry_aircraft_registration.get(),
 
@@ -115,15 +114,15 @@ def read_aircraft(tree):  # fill tree from database
     for record in result:
         if record.weight >= 0:  # this condition excludes soft deleted records from being shown in the data table
             if count % 2 == 0:  # even
-                tree.insert(parent='', index='end', iid=str(count), text='', values=danskcargo_data.aircraft2tuple(record), tags=('evenrow',))  # Insert one row into the data table
+                tree.insert(parent='', index='end', iid=str(count), text='', values=record.aircraft2tuple(), tags=('evenrow',))  # Insert one row into the data table
             else:  # odd
-                tree.insert(parent='', index='end', iid=str(count), text='', values=danskcargo_data.aircraft2tuple(record), tags=('oddrow',))  # Insert one row into the data table
+                tree.insert(parent='', index='end', iid=str(count), text='', values=record.aircraft2tuple(), tags=('oddrow',))  # Insert one row into the data table
             count += 1
 
 
-# endregion aircraft
+# endregion aircraft functions
 
-# region transport
+# region transport functions
 
 def read_transport_entries():  # Read content of entry boxes
     return entry_transport_id.get(), entry_transport_date.get(), entry_transport_container_id.get(), entry_transport_aircraft_id.get(),
@@ -152,21 +151,21 @@ def edit_transport(event, tree):  # Copy selected record into entry boxes. Param
 
 
 def create_transport(tree, record):  # add new record to database
-    transport = danskcargo_data.tuple2transport(record)  # Convert tuple to  Transport
+    transport = danskcargo_data.tuple2transport(record)  # Convert tuple to Transport
     dcsql.create_record(transport)  # Update database
     clear_transport_entries()  # Clear entry boxes
     refresh_treeview(tree, dcsql.Transport)  # Refresh treeview table
 
 
 def update_transport(tree, record):  # update record in database
-    transport = danskcargo_data.tuple2transport(record)  # Convert tuple to  Transport
+    transport = danskcargo_data.tuple2transport(record)  # Convert tuple to Transport
     dcsql.update_transport(transport)  # Update database
     clear_transport_entries()  # Clear entry boxes
     refresh_treeview(tree, dcsql.Transport)  # Refresh treeview table
 
 
 def delete_transport(tree, record):  # delete record in database
-    transport = danskcargo_data.tuple2transport(record)  # Convert tuple to  Transport
+    transport = danskcargo_data.tuple2transport(record)  # Convert tuple to Transport
     dcsql.delete_hard_transport(transport)  # Update database
     clear_transport_entries()  # Clear entry boxes
     refresh_treeview(tree, dcsql.Transport)  # Refresh treeview table
@@ -174,17 +173,19 @@ def delete_transport(tree, record):  # delete record in database
 
 def read_transport(tree):  # fill tree from database
     count = 0  # Used to keep track of odd and even rows, because these will be colored differently.
-    result = dcsql.select_all(danskcargo_data. Transport)  # Read all transports from database
+    result = dcsql.select_all(danskcargo_data.Transport)  # Read all transports from database
     for record in result:
         if record.weight >= 0:  # this condition excludes soft deleted records from being shown in the data table
             if count % 2 == 0:  # even
-                tree.insert(parent='', index='end', iid=str(count), text='', values=danskcargo_data.transport2tuple(record), tags=('evenrow',))  # Insert one row into the data table
+                tree.insert(parent='', index='end', iid=str(count), text='', values=record.transport2tuple(), tags=('evenrow',))  # Insert one row into the data table
             else:  # odd
-                tree.insert(parent='', index='end', iid=str(count), text='', values=danskcargo_data.transport2tuple(record), tags=('oddrow',))  # Insert one row into the data table
+                tree.insert(parent='', index='end', iid=str(count), text='', values=record.transport2tuple(), tags=('oddrow',))  # Insert one row into the data table
             count += 1
 
 
-# endregion transport
+# endregion transport functions
+
+# region common functions
 
 def refresh_treeview(tree, class_):  # Refresh treeview table
     empty_treeview(tree)  # Clear treeview table
@@ -195,7 +196,9 @@ def empty_treeview(tree):  # Clear treeview table
     tree.delete(*tree.get_children())
 
 
-# global constants
+# endregion common functions
+
+# region global constants
 padx = 8  # Horizontal distance to neighboring objects
 pady = 4  # Vertical distance to neighboring objects
 rowheight = 24  # rowheight in treeview
@@ -205,6 +208,9 @@ treeview_selected = "#206030"  # color of selected row in treeview
 oddrow = "#dddddd"  # color of odd row in treeview
 evenrow = "#cccccc"  # color of even row in treeview
 
+# endregion global constants
+
+# region common widgets
 root = tk.Tk()  # Define the main window
 root.title('AspIT S2: DanskCargo')  # Text shown in the top window bar
 root.iconbitmap('AspIT.ico')  # Icon in the upper left corner
@@ -217,7 +223,9 @@ style.theme_use('default')  # Pick theme
 style.configure("Treeview", background=treeview_background, foreground=treeview_foreground, rowheight=rowheight, fieldbackground=treeview_background)
 style.map('Treeview', background=[('selected', treeview_selected)])  # Define color of selected row in treeview
 
-# region containergui
+# endregion common widgets
+
+# region container widgets
 # Define Labelframe which contains all container related GUI objects (data table, labels, buttons, ...)
 frame_container = tk.LabelFrame(root, text="Container")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
 frame_container.grid(row=0, column=0, padx=padx, pady=pady)  # https://www.tutorialspoint.com/python/tk_grid.htm
@@ -256,17 +264,17 @@ edit_frame_container.grid(row=0, column=0, padx=padx, pady=pady)
 # label and entry for container id
 label_container_id = tk.Label(edit_frame_container, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
 label_container_id.grid(row=0, column=0, padx=padx, pady=pady)
-entry_container_id = tk.Entry(edit_frame_container, width=6)  # https://www.tutorialspoint.com/python/tk_entry.htm
+entry_container_id = tk.Entry(edit_frame_container, width=4, justify="right")  # https://www.tutorialspoint.com/python/tk_entry.htm
 entry_container_id.grid(row=1, column=0, padx=padx, pady=pady)
 # label and entry for container weight
 label_container_weight = tk.Label(edit_frame_container, text="Weight")
 label_container_weight.grid(row=0, column=1, padx=padx, pady=pady)
-entry_container_weight = tk.Entry(edit_frame_container, width=8)
+entry_container_weight = tk.Entry(edit_frame_container, width=8, justify="right")
 entry_container_weight.grid(row=1, column=1, padx=padx, pady=pady)
 # label and entry for container destination
 label_container_destination = tk.Label(edit_frame_container, text="Destination")
 label_container_destination.grid(row=0, column=2, padx=padx, pady=pady)
-entry_container_destination = tk.Entry(edit_frame_container, width=20)
+entry_container_destination = tk.Entry(edit_frame_container, width=27)
 entry_container_destination.grid(row=1, column=2, padx=padx, pady=pady)
 
 # Define Frame which contains buttons
@@ -282,9 +290,9 @@ button_delete_container.grid(row=0, column=3, padx=padx, pady=pady)
 select_record_button = tk.Button(button_frame_container, text="Clear Entry Boxes", command=clear_container_entries)
 select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 
-# endregion containergui
+# endregion container widgets
 
-# region aircraftgui
+# region aircraft widgets
 # Define Labelframe which contains all aircraft related GUI objects (data table, labels, buttons, ...)
 frame_aircraft = tk.LabelFrame(root, text="Aircraft")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
 frame_aircraft.grid(row=0, column=1, padx=padx, pady=pady)  # https://www.tutorialspoint.com/python/tk_grid.htm
@@ -299,15 +307,15 @@ tree_aircraft.grid(row=0, column=0, padx=0, pady=pady)
 tree_scroll_aircraft.config(command=tree_aircraft.yview)
 
 # Define the data table's formatting and content
-tree_aircraft['columns'] = ("id", "weight", "destination")  # Define columns
+tree_aircraft['columns'] = ("id", "max_cargo_weight", "registration")  # Define columns
 tree_aircraft.column("#0", width=0, stretch=tk.NO)  # Format columns. Suppress the irritating first empty column.
 tree_aircraft.column("id", anchor=tk.E, width=40)  # "E" stands for East, meaning Right. Possible anchors are N, NE, E, SE, S, SW, W, NW and CENTER
-tree_aircraft.column("weight", anchor=tk.E, width=80)
-tree_aircraft.column("destination", anchor=tk.W, width=200)
+tree_aircraft.column("max_cargo_weight", anchor=tk.E, width=100)
+tree_aircraft.column("registration", anchor=tk.W, width=100)
 tree_aircraft.heading("#0", text="", anchor=tk.W)  # Create column headings
 tree_aircraft.heading("id", text="Id", anchor=tk.CENTER)
-tree_aircraft.heading("weight", text="Weight", anchor=tk.CENTER)
-tree_aircraft.heading("destination", text="Destination", anchor=tk.CENTER)
+tree_aircraft.heading("max_cargo_weight", text="Max.Carg.Wgt.", anchor=tk.CENTER)
+tree_aircraft.heading("registration", text="Registration", anchor=tk.CENTER)
 tree_aircraft.tag_configure('oddrow', background=oddrow)  # Create tags for rows in 2 different colors
 tree_aircraft.tag_configure('evenrow', background=evenrow)
 
@@ -323,17 +331,17 @@ edit_frame_aircraft.grid(row=0, column=0, padx=padx, pady=pady)
 # label and entry for aircraft id
 label_aircraft_id = tk.Label(edit_frame_aircraft, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
 label_aircraft_id.grid(row=0, column=0, padx=padx, pady=pady)
-entry_aircraft_id = tk.Entry(edit_frame_aircraft, width=6)  # https://www.tutorialspoint.com/python/tk_entry.htm
+entry_aircraft_id = tk.Entry(edit_frame_aircraft, width=4, justify="right")  # https://www.tutorialspoint.com/python/tk_entry.htm
 entry_aircraft_id.grid(row=1, column=0, padx=padx, pady=pady)
 # label and entry for aircraft weight
-label_aircraft_max_cargo_weight = tk.Label(edit_frame_aircraft, text="Weight")
+label_aircraft_max_cargo_weight = tk.Label(edit_frame_aircraft, text="Max.Carg.Wgt.")
 label_aircraft_max_cargo_weight.grid(row=0, column=1, padx=padx, pady=pady)
-entry_aircraft_max_cargo_weight = tk.Entry(edit_frame_aircraft, width=8)
+entry_aircraft_max_cargo_weight = tk.Entry(edit_frame_aircraft, width=8, justify="right")
 entry_aircraft_max_cargo_weight.grid(row=1, column=1, padx=padx, pady=pady)
 # label and entry for aircraft destination
-label_aircraft_registration = tk.Label(edit_frame_aircraft, text="Destination")
+label_aircraft_registration = tk.Label(edit_frame_aircraft, text="Registration")
 label_aircraft_registration.grid(row=0, column=2, padx=padx, pady=pady)
-entry_aircraft_registration = tk.Entry(edit_frame_aircraft, width=20)
+entry_aircraft_registration = tk.Entry(edit_frame_aircraft, width=9)
 entry_aircraft_registration.grid(row=1, column=2, padx=padx, pady=pady)
 
 # Define Frame which contains buttons
@@ -349,9 +357,9 @@ button_delete_aircraft.grid(row=0, column=3, padx=padx, pady=pady)
 select_record_button = tk.Button(button_frame_aircraft, text="Clear Entry Boxes", command=clear_aircraft_entries)
 select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 
-# endregion aircraftgui
+# endregion aircraft widgets
 
-# regiontransportgui
+# regiontransport widgets
 # Define Labelframe which contains all transport related GUI objects (data table, labels, buttons, ...)
 frame_transport = tk.LabelFrame(root, text="Transport")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
 frame_transport.grid(row=0, column=2, padx=padx, pady=pady)  # https://www.tutorialspoint.com/python/tk_grid.htm
@@ -370,8 +378,8 @@ tree_transport['columns'] = ("id", "date", "container_id", "aircraft_id")  # Def
 tree_transport.column("#0", width=0, stretch=tk.NO)  # Format columns. Suppress the irritating first empty column.
 tree_transport.column("id", anchor=tk.E, width=40)  # "E" stands for East, meaning Right. Possible anchors are N, NE, E, SE, S, SW, W, NW and CENTER
 tree_transport.column("date", anchor=tk.E, width=80)
-tree_transport.column("container_id", anchor=tk.W, width=90)
-tree_transport.column("aircraft_id", anchor=tk.W, width=90)
+tree_transport.column("container_id", anchor=tk.E, width=70)
+tree_transport.column("aircraft_id", anchor=tk.E, width=70)
 tree_transport.heading("#0", text="", anchor=tk.W)  # Create column headings
 tree_transport.heading("id", text="Id", anchor=tk.CENTER)
 tree_transport.heading("date", text="Date", anchor=tk.CENTER)
@@ -392,22 +400,23 @@ edit_frame_transport.grid(row=0, column=0, padx=padx, pady=pady)
 # label and entry for transport id
 label_transport_id = tk.Label(edit_frame_transport, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
 label_transport_id.grid(row=0, column=0, padx=padx, pady=pady)
-entry_transport_id = tk.Entry(edit_frame_transport, width=6)  # https://www.tutorialspoint.com/python/tk_entry.htm
+entry_transport_id = tk.Entry(edit_frame_transport, width=4, justify="right")  # https://www.tutorialspoint.com/python/tk_entry.htm
+# entry_transport_id = tk.Entry(edit_frame_transport, width=4, justify="tk.RIGHT")  # https://www.tutorialspoint.com/python/tk_entry.htm
 entry_transport_id.grid(row=1, column=0, padx=padx, pady=pady)
 # label and entry for transport weight
 label_transport_date = tk.Label(edit_frame_transport, text="Date")
 label_transport_date.grid(row=0, column=1, padx=padx, pady=pady)
-entry_transport_date = tk.Entry(edit_frame_transport, width=8)
+entry_transport_date = tk.Entry(edit_frame_transport, width=10)
 entry_transport_date.grid(row=1, column=1, padx=padx, pady=pady)
 # label and entry for transport destination
 label_transport_container_id = tk.Label(edit_frame_transport, text="Container Id")
 label_transport_container_id.grid(row=0, column=2, padx=padx, pady=pady)
-entry_transport_container_id = tk.Entry(edit_frame_transport, width=6)
+entry_transport_container_id = tk.Entry(edit_frame_transport, width=4, justify="right")
 entry_transport_container_id.grid(row=1, column=2, padx=padx, pady=pady)
 # label and entry for transport destination
 label_transport_aircraft_id = tk.Label(edit_frame_transport, text="Aircraft Id")
 label_transport_aircraft_id.grid(row=0, column=3, padx=padx, pady=pady)
-entry_transport_aircraft_id = tk.Entry(edit_frame_transport, width=6)
+entry_transport_aircraft_id = tk.Entry(edit_frame_transport, width=4, justify="right")
 entry_transport_aircraft_id.grid(row=1, column=3, padx=padx, pady=pady)
 
 # Define Frame which contains buttons
@@ -423,7 +432,7 @@ button_delete_transport.grid(row=0, column=3, padx=padx, pady=pady)
 select_record_button = tk.Button(button_frame_transport, text="Clear Entry Boxes", command=clear_transport_entries)
 select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 
-# endregiontransportgui
+# endregiontransport widgets
 
 refresh_treeview(tree_container, dcsql.Container)  # Load data from database
 refresh_treeview(tree_aircraft, dcsql.Aircraft)  # Load data from database
