@@ -35,6 +35,16 @@ def select_all(classparam):  # https://docs.sqlalchemy.org/en/14/tutorial/data_s
     return result
 
 
+def max_id(classparam):
+    # d
+    with Session(engine) as session:
+        records = session.scalars(select(classparam))  # very useful for converting into our data class
+        max = 0
+        for record in records:
+            if record.id > max:
+                max = record.id
+    return max
+
 def get_record(classparam, record_id):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
     # return the tuple_ in classparams table with a certain id
     with Session(engine) as session:

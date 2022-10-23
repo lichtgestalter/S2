@@ -1,8 +1,22 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import danskcargo_data as dcd
 import danskcargo_sql as dcsql
 import danskcargo_func as dcf
+
+# region global constants
+padx = 8  # Horizontal distance to neighboring objects
+pady = 4  # Vertical distance to neighboring objects
+rowheight = 24  # rowheight in treeview
+treeview_background = "#eeeeee"  # color of background in treeview
+treeview_foreground = "black"  # color of foreground in treeview
+treeview_selected = "#206030"  # color of selected row in treeview
+oddrow = "#dddddd"  # color of odd row in treeview
+evenrow = "#cccccc"  # color of even row in treeview
+INTERNAL_ERROR_CODE = 0
+
+# endregion global constants
 
 
 # region container functions
@@ -33,21 +47,21 @@ def create_container(tree, record):  # add new tuple_ to database
     container = dcd.Container.convert_from_tuple(record)  # Convert tuple to Container
     dcsql.create_record(container)  # Update database
     clear_container_entries()  # Clear entry boxes
-    refresh_treeview(tree, dcsql.Container)  # Refresh treeview table
+    refresh_treeview(tree, dcd.Container)  # Refresh treeview table
 
 
 def update_container(tree, record):  # update tuple_ in database
     container = dcd.Container.convert_from_tuple(record)  # Convert tuple to Container
     dcsql.update_container(container)  # Update database
     clear_container_entries()  # Clear entry boxes
-    refresh_treeview(tree, dcsql.Container)  # Refresh treeview table
+    refresh_treeview(tree, dcd.Container)  # Refresh treeview table
 
 
 def delete_container(tree, record):  # delete tuple_ in database
     container = dcd.Container.convert_from_tuple(record)  # Convert tuple to Container
     dcsql.delete_soft_container(container)  # Update database
     clear_container_entries()  # Clear entry boxes
-    refresh_treeview(tree, dcsql.Container)  # Refresh treeview table
+    refresh_treeview(tree, dcd.Container)  # Refresh treeview table
 
 
 def read_table(tree, class_):  # fill tree from database
@@ -92,21 +106,21 @@ def create_aircraft(tree, record):  # add new tuple_ to database
     aircraft = dcd.Aircraft.convert_from_tuple(record)  # Convert tuple to Aircraft
     dcsql.create_record(aircraft)  # Update database
     clear_aircraft_entries()  # Clear entry boxes
-    refresh_treeview(tree, dcsql.Aircraft)  # Refresh treeview table
+    refresh_treeview(tree, dcd.Aircraft)  # Refresh treeview table
 
 
 def update_aircraft(tree, record):  # update tuple_ in database
     aircraft = dcd.Aircraft.convert_from_tuple(record)  # Convert tuple to Aircraft
     dcsql.update_aircraft(aircraft)  # Update database
     clear_aircraft_entries()  # Clear entry boxes
-    refresh_treeview(tree, dcsql.Aircraft)  # Refresh treeview table
+    refresh_treeview(tree, dcd.Aircraft)  # Refresh treeview table
 
 
 def delete_aircraft(tree, record):  # delete tuple_ in database
     aircraft = dcd.Aircraft.convert_from_tuple(record)  # Convert tuple to Aircraft
     dcsql.delete_soft_aircraft(aircraft)  # Update database
     clear_aircraft_entries()  # Clear entry boxes
-    refresh_treeview(tree, dcsql.Aircraft)  # Refresh treeview table
+    refresh_treeview(tree, dcd.Aircraft)  # Refresh treeview table
 
 
 def read_aircraft(tree):  # fill tree from database
@@ -153,27 +167,42 @@ def edit_transport(event, tree):  # Copy selected tuple_ into entry boxes. Param
 
 def create_transport(tree, record):  # add new tuple_ to database
     transport = dcd.Transport.convert_from_tuple(record)  # Convert tuple to Transport
-    print(f'{transport.date=}')
-    x=dcf.capacity_available(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
-    print("available", x)
-
-    dcsql.create_record(transport)  # Update database
-    clear_transport_entries()  # Clear entry boxes
-    refresh_treeview(tree, dcsql.Transport)  # Refresh treeview table
+    capacity_ok = dcf.capacity_available(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
+    destination_ok = dcf.max_one_destination(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
+    if destination_ok:
+        if capacity_ok:
+            dcsql.create_record(transport)  # Update database
+            clear_transport_entries()  # Clear entry boxes
+            refresh_treeview(tree, dcd.Transport)  # Refresh treeview table
+        else:
+            global INTERNAL_ERROR_CODE
+            INTERNAL_ERROR_CODE = 1
+            messagebox.showwarning("", "Not enough capacity on aircraft!")
+    else:
+        messagebox.showwarning("", "Aircraft already has another destination!")
 
 
 def update_transport(tree, record):  # update tuple_ in database
     transport = dcd.Transport.convert_from_tuple(record)  # Convert tuple to Transport
-    dcsql.update_transport(transport)  # Update database
-    clear_transport_entries()  # Clear entry boxes
-    refresh_treeview(tree, dcsql.Transport)  # Refresh treeview table
+    capacity_ok = dcf.capacity_available(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
+    destination_ok = dcf.max_one_destination(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
+    if destination_ok:
+        if capacity_ok:
+            dcsql.update_transport(transport)  # Update database
+            clear_transport_entries()  # Clear entry boxes
+            refresh_treeview(tree, dcd.Transport)  # Refresh treeview table
+        else:
+            INTERNAL_ERROR_CODE = 1
+            messagebox.showwarning("", "Not enough capacity on aircraft!")
+    else:
+        messagebox.showwarning("", "Aircraft already has another destination!")
 
 
 def delete_transport(tree, record):  # delete tuple_ in database
     transport = dcd.Transport.convert_from_tuple(record)  # Convert tuple to Transport
     dcsql.delete_hard_transport(transport)  # Update database
     clear_transport_entries()  # Clear entry boxes
-    refresh_treeview(tree, dcsql.Transport)  # Refresh treeview table
+    refresh_treeview(tree, dcd.Transport)  # Refresh treeview table
 
 
 def read_transport(tree):  # fill tree from database
@@ -202,18 +231,6 @@ def empty_treeview(tree):  # Clear treeview table
 
 
 # endregion common functions
-
-# region global constants
-padx = 8  # Horizontal distance to neighboring objects
-pady = 4  # Vertical distance to neighboring objects
-rowheight = 24  # rowheight in treeview
-treeview_background = "#eeeeee"  # color of background in treeview
-treeview_foreground = "black"  # color of foreground in treeview
-treeview_selected = "#206030"  # color of selected row in treeview
-oddrow = "#dddddd"  # color of odd row in treeview
-evenrow = "#cccccc"  # color of even row in treeview
-
-# endregion global constants
 
 # region common widgets
 root = tk.Tk()  # Define the main window
@@ -442,5 +459,5 @@ select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 refresh_treeview(tree_container, dcsql.Container)  # Load data from database
 refresh_treeview(tree_aircraft, dcsql.Aircraft)  # Load data from database
 refresh_treeview(tree_transport, dcsql.Transport)  # Load data from database
-if __name__ == "__main__":  # Executed when invoked directly. We use thismainloop does not keep our unit tests from running.
+if __name__ == "__main__":  # Executed when invoked directly. We use this so root.mainloop() does not keep our unit tests from running.
     root.mainloop()  # Wait for button clicks and act upon them

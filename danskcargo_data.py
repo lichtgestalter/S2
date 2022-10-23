@@ -2,6 +2,7 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import String, Integer, Date
 from dateutil import parser
+from tkinter import messagebox
 
 Base = declarative_base()  # creating the registry and declarative base classes - combined into one step. Base will serve as the base class for the ORM mapped classes we declare.
 
@@ -52,8 +53,19 @@ class Aircraft(Base):
 
     @classmethod
     def convert_from_tuple(cls, tuple_):  # Convert tuple to aircraft
-        aircraft = cls(id=tuple_[0], max_cargo_weight=tuple_[1], registration=tuple_[2])
-        return aircraft
+        try:
+            if tuple_[0] != '':
+                id_ = int(tuple_[0])
+            else:
+                id_ = 0
+            max_cargo_weight = int(tuple_[1])
+            if max_cargo_weight < 0:
+                messagebox.showwarning("", "Max. Cargo Weight must not be negative!")
+            else:
+                aircraft = cls(id=id_, max_cargo_weight=max_cargo_weight, registration=tuple_[2])
+                return aircraft
+        except:
+            messagebox.showwarning("", "Entries could not be converted to aircraft!")
 
 
 class Transport(Base):
@@ -78,5 +90,15 @@ class Transport(Base):
 
     @classmethod
     def convert_from_tuple(cls, tuple_):  # Convert tuple to transport
-        transport = cls(id=tuple_[0], date=parser.parse(tuple_[1]), container_id=tuple_[2], aircraft_id=tuple_[3])
-        return transport
+        try:
+            if tuple_[0] != '':
+                id_ = int(tuple_[0])
+            else:
+                id_ = 0
+            date = parser.parse(tuple_[1])
+            container_id = int(tuple_[2])
+            aircraft_id = int(tuple_[3])
+            transport = cls(id=id_, date=date, container_id=container_id, aircraft_id=aircraft_id)
+            return transport
+        except:
+            messagebox.showwarning("", "Entries could not be converted to transport!")
