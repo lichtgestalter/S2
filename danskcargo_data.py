@@ -17,11 +17,11 @@ class Container(Base):
 
     def convert_to_tuple(self):  # Convert Container to tuple
         return self.id, self.weight, self.destination
-    
+
     def valid(self):
         try:
             value = int(self.weight)
-        except:
+        except ValueError:
             return False
         return value >= 0
 
@@ -46,7 +46,7 @@ class Aircraft(Base):
     def valid(self):
         try:
             value = int(self.max_cargo_weight)
-        except:
+        except ValueError:
             return False
         return value >= 0
 
@@ -72,7 +72,7 @@ class Transport(Base):
     def valid(self):
         try:
             value = int(self.container_id)
-        except:
+        except ValueError:
             return False
         return value >= 0
 

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import danskcargo_data as dcd
 import danskcargo_sql as dcsql
+import danskcargo_func as dcf
 
 
 # region container functions
@@ -152,6 +153,10 @@ def edit_transport(event, tree):  # Copy selected tuple_ into entry boxes. Param
 
 def create_transport(tree, record):  # add new tuple_ to database
     transport = dcd.Transport.convert_from_tuple(record)  # Convert tuple to Transport
+    print(f'{transport.date=}')
+    x=dcf.capacity_available(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
+    print("available", x)
+
     dcsql.create_record(transport)  # Update database
     clear_transport_entries()  # Clear entry boxes
     refresh_treeview(tree, dcsql.Transport)  # Refresh treeview table
@@ -437,4 +442,5 @@ select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 refresh_treeview(tree_container, dcsql.Container)  # Load data from database
 refresh_treeview(tree_aircraft, dcsql.Aircraft)  # Load data from database
 refresh_treeview(tree_transport, dcsql.Transport)  # Load data from database
-root.mainloop()  # Wait for button clicks and act upon them
+if __name__ == "__main__":  # Executed when invoked directly. We use thismainloop does not keep our unit tests from running.
+    root.mainloop()  # Wait for button clicks and act upon them

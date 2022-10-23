@@ -116,7 +116,6 @@ def delete_hard_transport(transport):
         session.execute(delete(Transport).where(Transport.id == transport.id))
         session.commit()  # makes changes permanent in database
 
-
 # endregion transport
 
 # region examples
