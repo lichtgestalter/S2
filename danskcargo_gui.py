@@ -4,6 +4,7 @@ from tkinter import messagebox
 import danskcargo_data as dcd
 import danskcargo_sql as dcsql
 import danskcargo_func as dcf
+import weather
 
 # region global constants
 padx = 8  # Horizontal distance to neighboring objects
@@ -17,7 +18,6 @@ evenrow = "#cccccc"  # color of even row in treeview
 INTERNAL_ERROR_CODE = 0
 
 # endregion global constants
-
 
 # region container functions
 def read_container_entries():  # Read content of entry boxes
@@ -230,13 +230,16 @@ def empty_treeview(tree):  # Clear treeview table
     tree.delete(*tree.get_children())
 
 
+def check_weather():
+    print(weather.weather_now(entry_weather_city.get()))
+
 # endregion common functions
 
 # region common widgets
 root = tk.Tk()  # Define the main window
 root.title('AspIT S2: DanskCargo')  # Text shown in the top window bar
 root.iconbitmap('AspIT.ico')  # Icon in the upper left corner
-root.geometry("1200x500")  # window size
+root.geometry("1300x550")  # window size
 
 style = ttk.Style()  # Add style
 style.theme_use('default')  # Pick theme
@@ -250,7 +253,7 @@ style.map('Treeview', background=[('selected', treeview_selected)])  # Define co
 # region container widgets
 # Define Labelframe which contains all container related GUI objects (data table, labels, buttons, ...)
 frame_container = tk.LabelFrame(root, text="Container")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
-frame_container.grid(row=0, column=0, padx=padx, pady=pady)  # https://www.tutorialspoint.com/python/tk_grid.htm
+frame_container.grid(row=0, column=0, padx=padx, pady=pady, sticky=tk.N)  # https://www.tutorialspoint.com/python/tk_grid.htm
 
 # Define data table (Treeview) and its scrollbar. Put them in a Frame.
 tree_frame_container = tk.Frame(frame_container)  # https://www.tutorialspoint.com/python/tk_frame.htm
@@ -312,12 +315,22 @@ button_delete_container.grid(row=0, column=3, padx=padx, pady=pady)
 select_record_button = tk.Button(button_frame_container, text="Clear Entry Boxes", command=clear_container_entries)
 select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 
+# Define Frame, Button and Entries for weather check
+weather_frame = tk.Label(controls_frame_container)
+weather_frame.grid(row=2, column=0, padx=padx, pady=pady)
+button_weather = tk.Button(weather_frame, text="Check Weather", command=check_weather)
+button_weather.grid(row=0, column=0, padx=padx, pady=pady)
+entry_weather_city = tk.Entry(weather_frame, width=27)
+entry_weather_city.grid(row=0, column=1, padx=padx, pady=pady)
+entry_weather_weather = tk.Entry(weather_frame, width=27)
+entry_weather_weather.grid(row=0, column=2, padx=padx, pady=pady)
+
 # endregion container widgets
 
 # region aircraft widgets
 # Define Labelframe which contains all aircraft related GUI objects (data table, labels, buttons, ...)
 frame_aircraft = tk.LabelFrame(root, text="Aircraft")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
-frame_aircraft.grid(row=0, column=1, padx=padx, pady=pady)  # https://www.tutorialspoint.com/python/tk_grid.htm
+frame_aircraft.grid(row=0, column=1, padx=padx, pady=pady, sticky=tk.N)  # https://www.tutorialspoint.com/python/tk_grid.htm
 
 # Define data table (Treeview) and its scrollbar. Put them in a Frame.
 tree_frame_aircraft = tk.Frame(frame_aircraft)  # https://www.tutorialspoint.com/python/tk_frame.htm
@@ -384,7 +397,7 @@ select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 # regiontransport widgets
 # Define Labelframe which contains all transport related GUI objects (data table, labels, buttons, ...)
 frame_transport = tk.LabelFrame(root, text="Transport")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
-frame_transport.grid(row=0, column=2, padx=padx, pady=pady)  # https://www.tutorialspoint.com/python/tk_grid.htm
+frame_transport.grid(row=0, column=2, padx=padx, pady=pady, sticky=tk.N)  # https://www.tutorialspoint.com/python/tk_grid.htm
 
 # Define data table (Treeview) and its scrollbar. Put them in a Frame.
 tree_frame_transport = tk.Frame(frame_transport)  # https://www.tutorialspoint.com/python/tk_frame.htm
