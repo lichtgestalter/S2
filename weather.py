@@ -11,8 +11,13 @@ def weather_now(city, key=KEY):
     # print(weather["weather"])
     # print(weather["weather"][0]["main"])
     # print(int(weather["main"]["temp"]))
-    return weather["weather"][0]["main"] + ", " + str(int(weather["main"]["temp"])) + "°C"
+    if weather["cod"] == 200:
+        weather_report = weather["weather"][0]["main"] + ", " + str(int(weather["main"]["temp"])) + "°C"
+    else:
+        weather_report = "Unknown Location"
+    return weather_report
 
 
 if __name__ == "__main__":  # Executed when invoked directly
     print(weather_now("Helsinki", KEY))
+    print(weather_now("xxxxzzzyy", KEY))

@@ -28,12 +28,14 @@ def clear_container_entries():  # Clear entry boxes
     entry_container_id.delete(0, tk.END)  # Delete text in entry box, beginning with the first character (0) and ending with the last character (tk.END)
     entry_container_weight.delete(0, tk.END)
     entry_container_destination.delete(0, tk.END)
+    entry_container_weather.delete(0, tk.END)
 
 
 def write_container_entries(values):  # Fill entry boxes
     entry_container_id.insert(0, values[0])
     entry_container_weight.insert(0, values[1])
     entry_container_destination.insert(0, values[2])
+    entry_container_weather.insert(0, weather.weather_now(entry_container_destination.get()))
 
 
 def edit_container(event, tree):  # Copy selected tuple_ into entry boxes. Parameter event is mandatory but we don't use it.
@@ -42,6 +44,11 @@ def edit_container(event, tree):  # Copy selected tuple_ into entry boxes. Param
     clear_container_entries()  # Clear entry boxes
     write_container_entries(values)  # Fill entry boxes
 
+
+def copy_container_id(event):
+    print("hello this is a test")
+    entry_transport_container_id.delete(0, tk.END)
+    entry_transport_container_id.insert(0, entry_container_id.get())
 
 def create_container(tree, record):  # add new tuple_ to database
     container = dcd.Container.convert_from_tuple(record)  # Convert tuple to Container
@@ -100,6 +107,12 @@ def edit_aircraft(event, tree):  # Copy selected tuple_ into entry boxes. Parame
     values = tree.item(index_selected, 'values')  # Values of selected tuple_
     clear_aircraft_entries()  # Clear entry boxes
     write_aircraft_entries(values)  # Fill entry boxes
+
+
+def copy_aircraft_id(event):
+    print("hello this is a cat craftaircrafttest")
+    entry_transport_aircraft_id.delete(0, tk.END)
+    entry_transport_aircraft_id.insert(0, entry_aircraft_id.get())
 
 
 def create_aircraft(tree, record):  # add new tuple_ to database
@@ -229,17 +242,13 @@ def refresh_treeview(tree, class_):  # Refresh treeview table
 def empty_treeview(tree):  # Clear treeview table
     tree.delete(*tree.get_children())
 
-
-def check_weather():
-    print(weather.weather_now(entry_weather_city.get()))
-
 # endregion common functions
 
 # region common widgets
 root = tk.Tk()  # Define the main window
 root.title('AspIT S2: DanskCargo')  # Text shown in the top window bar
 root.iconbitmap('AspIT.ico')  # Icon in the upper left corner
-root.geometry("1300x550")  # window size
+root.geometry("1200x500")  # window size
 
 style = ttk.Style()  # Add style
 style.theme_use('default')  # Pick theme
@@ -278,6 +287,7 @@ tree_container.tag_configure('oddrow', background=oddrow)  # Create tags for row
 tree_container.tag_configure('evenrow', background=evenrow)
 
 tree_container.bind("<ButtonRelease-1>", lambda event: edit_container(event, tree_container))  # Define function to be called, when an item is selected.
+tree_container.bind("<Double-Button-1>", copy_container_id)  # Define function to be called after double click.
 
 # Define Frame which contains labels, entries and buttons
 controls_frame_container = tk.Frame(frame_container)
@@ -299,8 +309,13 @@ entry_container_weight.grid(row=1, column=1, padx=padx, pady=pady)
 # label and entry for container destination
 label_container_destination = tk.Label(edit_frame_container, text="Destination")
 label_container_destination.grid(row=0, column=2, padx=padx, pady=pady)
-entry_container_destination = tk.Entry(edit_frame_container, width=27)
+entry_container_destination = tk.Entry(edit_frame_container, width=20)
 entry_container_destination.grid(row=1, column=2, padx=padx, pady=pady)
+# label and entry for container destination
+label_container_weather = tk.Label(edit_frame_container, text="Weather")
+label_container_weather.grid(row=0, column=3, padx=padx, pady=pady)
+entry_container_weather = tk.Entry(edit_frame_container, width=14)
+entry_container_weather.grid(row=1, column=3, padx=padx, pady=pady)
 
 # Define Frame which contains buttons
 button_frame_container = tk.Label(controls_frame_container)
@@ -316,14 +331,12 @@ select_record_button = tk.Button(button_frame_container, text="Clear Entry Boxes
 select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 
 # Define Frame, Button and Entries for weather check
-weather_frame = tk.Label(controls_frame_container)
-weather_frame.grid(row=2, column=0, padx=padx, pady=pady)
-button_weather = tk.Button(weather_frame, text="Check Weather", command=check_weather)
-button_weather.grid(row=0, column=0, padx=padx, pady=pady)
-entry_weather_city = tk.Entry(weather_frame, width=27)
-entry_weather_city.grid(row=0, column=1, padx=padx, pady=pady)
-entry_weather_weather = tk.Entry(weather_frame, width=27)
-entry_weather_weather.grid(row=0, column=2, padx=padx, pady=pady)
+# weather_frame = tk.Label(controls_frame_container)
+# weather_frame.grid(row=2, column=0, padx=padx, pady=pady)
+# button_weather = tk.Button(weather_frame, text="Check Weather", command=check_weather)
+# button_weather.grid(row=0, column=0, padx=padx, pady=pady)
+# entry_weather_city = tk.Entry(weather_frame, width=27)
+# entry_weather_city.grid(row=0, column=1, padx=padx, pady=pady)
 
 # endregion container widgets
 
@@ -355,6 +368,7 @@ tree_aircraft.tag_configure('oddrow', background=oddrow)  # Create tags for rows
 tree_aircraft.tag_configure('evenrow', background=evenrow)
 
 tree_aircraft.bind("<ButtonRelease-1>", lambda event: edit_aircraft(event, tree_aircraft))  # Define function to be called, when an item is selected.
+tree_aircraft.bind("<Double-Button-1>", copy_aircraft_id)  # Define function to be called after double click.
 
 # Define Frame which contains labels, entries and buttons
 controls_frame_aircraft = tk.Frame(frame_aircraft)
