@@ -30,7 +30,7 @@ def select_all(classparam):  # https://docs.sqlalchemy.org/en/14/tutorial/data_s
         records = session.scalars(select(classparam))  # very useful for converting into our data class
         result = []
         for record in records:
-            # print(tuple_)
+            # print(record)
             result.append(record)
     return result
 
@@ -46,14 +46,14 @@ def max_id(classparam):
     return max
 
 def get_record(classparam, record_id):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
-    # return the tuple_ in classparams table with a certain id
+    # return the record in classparams table with a certain id
     with Session(engine) as session:
         record = session.scalars(select(classparam).where(classparam.id == record_id)).first()  # very useful for converting into our data class
     return record
 
 
 def create_record(record):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
-    # create a tuple_ in the database
+    # create a record in the database
     with Session(engine) as session:
         record.id = None
         session.add(record)
@@ -63,21 +63,21 @@ def create_record(record):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_dat
 # region container
 
 def update_container(container):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
-    # update a tuple_ in the container table
+    # update a record in the container table
     with Session(engine) as session:
         session.execute(update(Container).where(Container.id == container.id).values(weight=container.weight, destination=container.destination))
         session.commit()  # makes changes permanent in database
 
 
 def delete_hard_container(container):
-    # delete a tuple_ in the container table
+    # delete a record in the container table
     with Session(engine) as session:
         session.execute(delete(Container).where(Container.id == container.id))
         session.commit()  # makes changes permanent in database
 
 
 def delete_soft_container(container):
-    # soft delete a tuple_ in the container table by setting its weight to -1 (see also method "valid" in the container class)
+    # soft delete a record in the container table by setting its weight to -1 (see also method "valid" in the container class)
     with Session(engine) as session:
         session.execute(update(Container).where(Container.id == container.id).values(weight=-1, destination=container.destination))
         session.commit()  # makes changes permanent in database
@@ -88,21 +88,21 @@ def delete_soft_container(container):
 # region aircraft
 
 def update_aircraft(aircraft):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
-    # update a tuple_ in the aircraft table
+    # update a record in the aircraft table
     with Session(engine) as session:
         session.execute(update(Aircraft).where(Aircraft.id == aircraft.id).values(max_cargo_weight=aircraft.max_cargo_weight, registration=aircraft.registration))
         session.commit()  # makes changes permanent in database
 
 
 def delete_hard_aircraft(aircraft):
-    # delete a tuple_ in the aircraft table
+    # delete a record in the aircraft table
     with Session(engine) as session:
         session.execute(delete(Aircraft).where(Aircraft.id == aircraft.id))
         session.commit()  # makes changes permanent in database
 
 
 def delete_soft_aircraft(aircraft):
-    # soft delete a tuple_ in the aircraft table by setting its max_cargo_weight to -1 (see also method "valid" in the aircraft class)
+    # soft delete a record in the aircraft table by setting its max_cargo_weight to -1 (see also method "valid" in the aircraft class)
     with Session(engine) as session:
         session.execute(update(Aircraft).where(Aircraft.id == aircraft.id).values(max_cargo_weight=-1, registration=aircraft.registration))
         session.commit()  # makes changes permanent in database
@@ -114,14 +114,14 @@ def delete_soft_aircraft(aircraft):
 
 
 def update_transport(transport):  # https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#orm-enabled-update-statements
-    # update a tuple_ in the transport table
+    # update a record in the transport table
     with Session(engine) as session:
         session.execute(update(Transport).where(Transport.id == transport.id).values(date=transport.date, container_id=transport.container_id, aircraft_id=transport.aircraft_id))
         session.commit()  # makes changes permanent in database
 
 
 def delete_hard_transport(transport):
-    # delete a tuple_ in the transport table
+    # delete a record in the transport table
     with Session(engine) as session:
         session.execute(delete(Transport).where(Transport.id == transport.id))
         session.commit()  # makes changes permanent in database

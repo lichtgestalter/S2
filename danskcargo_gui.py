@@ -38,33 +38,32 @@ def write_container_entries(values):  # Fill entry boxes
     entry_container_weather.insert(0, weather.weather_now(entry_container_destination.get()))
 
 
-def edit_container(event, tree):  # Copy selected tuple_ into entry boxes. Parameter event is mandatory but we don't use it.
-    index_selected = tree.focus()  # Index of selected tuple_
-    values = tree.item(index_selected, 'values')  # Values of selected tuple_
+def edit_container(event, tree):  # Copy selected tuple into entry boxes. Parameter event is mandatory but we don't use it.
+    index_selected = tree.focus()  # Index of selected tuple
+    values = tree.item(index_selected, 'values')  # Values of selected tuple
     clear_container_entries()  # Clear entry boxes
     write_container_entries(values)  # Fill entry boxes
 
 
 def copy_container_id(event):
-    print("hello this is a test")
     entry_transport_container_id.delete(0, tk.END)
     entry_transport_container_id.insert(0, entry_container_id.get())
 
-def create_container(tree, record):  # add new tuple_ to database
+def create_container(tree, record):  # add new tuple to database
     container = dcd.Container.convert_from_tuple(record)  # Convert tuple to Container
     dcsql.create_record(container)  # Update database
     clear_container_entries()  # Clear entry boxes
     refresh_treeview(tree, dcd.Container)  # Refresh treeview table
 
 
-def update_container(tree, record):  # update tuple_ in database
+def update_container(tree, record):  # update tuple in database
     container = dcd.Container.convert_from_tuple(record)  # Convert tuple to Container
     dcsql.update_container(container)  # Update database
     clear_container_entries()  # Clear entry boxes
     refresh_treeview(tree, dcd.Container)  # Refresh treeview table
 
 
-def delete_container(tree, record):  # delete tuple_ in database
+def delete_container(tree, record):  # delete tuple in database
     container = dcd.Container.convert_from_tuple(record)  # Convert tuple to Container
     dcsql.delete_soft_container(container)  # Update database
     clear_container_entries()  # Clear entry boxes
@@ -102,34 +101,33 @@ def write_aircraft_entries(values):  # Fill entry boxes
     entry_aircraft_registration.insert(0, values[2])
 
 
-def edit_aircraft(event, tree):  # Copy selected tuple_ into entry boxes. Parameter event is mandatory but we don't use it.
-    index_selected = tree.focus()  # Index of selected tuple_
-    values = tree.item(index_selected, 'values')  # Values of selected tuple_
+def edit_aircraft(event, tree):  # Copy selected tuple into entry boxes. Parameter event is mandatory but we don't use it.
+    index_selected = tree.focus()  # Index of selected tuple
+    values = tree.item(index_selected, 'values')  # Values of selected tuple
     clear_aircraft_entries()  # Clear entry boxes
     write_aircraft_entries(values)  # Fill entry boxes
 
 
 def copy_aircraft_id(event):
-    print("hello this is a cat craftaircrafttest")
     entry_transport_aircraft_id.delete(0, tk.END)
     entry_transport_aircraft_id.insert(0, entry_aircraft_id.get())
 
 
-def create_aircraft(tree, record):  # add new tuple_ to database
+def create_aircraft(tree, record):  # add new tuple to database
     aircraft = dcd.Aircraft.convert_from_tuple(record)  # Convert tuple to Aircraft
     dcsql.create_record(aircraft)  # Update database
     clear_aircraft_entries()  # Clear entry boxes
     refresh_treeview(tree, dcd.Aircraft)  # Refresh treeview table
 
 
-def update_aircraft(tree, record):  # update tuple_ in database
+def update_aircraft(tree, record):  # update tuple in database
     aircraft = dcd.Aircraft.convert_from_tuple(record)  # Convert tuple to Aircraft
     dcsql.update_aircraft(aircraft)  # Update database
     clear_aircraft_entries()  # Clear entry boxes
     refresh_treeview(tree, dcd.Aircraft)  # Refresh treeview table
 
 
-def delete_aircraft(tree, record):  # delete tuple_ in database
+def delete_aircraft(tree, record):  # delete tuple in database
     aircraft = dcd.Aircraft.convert_from_tuple(record)  # Convert tuple to Aircraft
     dcsql.delete_soft_aircraft(aircraft)  # Update database
     clear_aircraft_entries()  # Clear entry boxes
@@ -170,15 +168,15 @@ def write_transport_entries(values):  # Fill entry boxes
     entry_transport_aircraft_id.insert(0, values[3])
 
 
-def edit_transport(event, tree):  # Copy selected tuple_ into entry boxes. Parameter event is mandatory but we don't use it.
-    index_selected = tree.focus()  # Index of selected tuple_
-    values = tree.item(index_selected, 'values')  # Values of selected tuple_
+def edit_transport(event, tree):  # Copy selected tuple into entry boxes. Parameter event is mandatory but we don't use it.
+    index_selected = tree.focus()  # Index of selected tuple
+    values = tree.item(index_selected, 'values')  # Values of selected tuple
     clear_transport_entries()  # Clear entry
     # boxes
     write_transport_entries(values)  # Fill entry boxes
 
 
-def create_transport(tree, record):  # add new tuple_ to database
+def create_transport(tree, record):  # add new tuple to database
     transport = dcd.Transport.convert_from_tuple(record)  # Convert tuple to Transport
     capacity_ok = dcf.capacity_available(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
     destination_ok = dcf.max_one_destination(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
@@ -195,7 +193,7 @@ def create_transport(tree, record):  # add new tuple_ to database
         messagebox.showwarning("", "Aircraft already has another destination!")
 
 
-def update_transport(tree, record):  # update tuple_ in database
+def update_transport(tree, record):  # update tuple in database
     transport = dcd.Transport.convert_from_tuple(record)  # Convert tuple to Transport
     capacity_ok = dcf.capacity_available(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
     destination_ok = dcf.max_one_destination(dcsql.get_record(dcd.Aircraft, transport.aircraft_id), transport.date, dcsql.get_record(dcd.Container, transport.container_id))
@@ -211,7 +209,7 @@ def update_transport(tree, record):  # update tuple_ in database
         messagebox.showwarning("", "Aircraft already has another destination!")
 
 
-def delete_transport(tree, record):  # delete tuple_ in database
+def delete_transport(tree, record):  # delete tuple in database
     transport = dcd.Transport.convert_from_tuple(record)  # Convert tuple to Transport
     dcsql.delete_hard_transport(transport)  # Update database
     clear_transport_entries()  # Clear entry boxes
@@ -294,7 +292,7 @@ controls_frame_container = tk.Frame(frame_container)
 controls_frame_container.grid(row=3, column=0, padx=padx, pady=pady)
 
 # Define Frame which contains labels (text fields) and entries (input fields)
-edit_frame_container = tk.Label(controls_frame_container)  # Add tuple_ entry boxes
+edit_frame_container = tk.Label(controls_frame_container)  # Add tuple entry boxes
 edit_frame_container.grid(row=0, column=0, padx=padx, pady=pady)
 # label and entry for container id
 label_container_id = tk.Label(edit_frame_container, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
@@ -375,7 +373,7 @@ controls_frame_aircraft = tk.Frame(frame_aircraft)
 controls_frame_aircraft.grid(row=3, column=0, padx=padx, pady=pady)
 
 # Define Frame which contains labels (text fields) and entries (input fields)
-edit_frame_aircraft = tk.Label(controls_frame_aircraft)  # Add tuple_ entry boxes
+edit_frame_aircraft = tk.Label(controls_frame_aircraft)  # Add tuple entry boxes
 edit_frame_aircraft.grid(row=0, column=0, padx=padx, pady=pady)
 # label and entry for aircraft id
 label_aircraft_id = tk.Label(edit_frame_aircraft, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
@@ -444,7 +442,7 @@ controls_frame_transport = tk.Frame(frame_transport)
 controls_frame_transport.grid(row=3, column=0, padx=padx, pady=pady)
 
 # Define Frame which contains labels (text fields) and entries (input fields)
-edit_frame_transport = tk.Label(controls_frame_transport)  # Add tuple_ entry boxes
+edit_frame_transport = tk.Label(controls_frame_transport)  # Add tuple entry boxes
 edit_frame_transport.grid(row=0, column=0, padx=padx, pady=pady)
 # label and entry for transport id
 label_transport_id = tk.Label(edit_frame_transport, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
