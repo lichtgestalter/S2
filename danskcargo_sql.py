@@ -5,11 +5,11 @@ from datetime import date
 
 from danskcargo_data import Container, Aircraft, Transport
 
-Database = 'sqlite:///dc1.db'  # first part: database type, second part: file path
+Database = 'sqlite:///danskcargo.db'  # first part: database type, second part: file path
 Base = declarative_base()  # creating the registry and declarative base classes - combined into one step. Base will serve as the base class for the ORM mapped classes we declare.
 
 
-def create_test_data_1():  # Optional. Used to test data base functions before gui is ready.
+def create_test_data():  # Optional. Used to test data base functions before gui is ready.
     with Session(engine) as session:
         new_items = []
         new_items.append(Container(weight=1200, destination="Oslo"))
@@ -19,7 +19,7 @@ def create_test_data_1():  # Optional. Used to test data base functions before g
         new_items.append(Aircraft(max_cargo_weight=2000, registration="OY-CBS"))
         new_items.append(Aircraft(max_cargo_weight=3000, registration="OY-THR"))
         a_date = date(day=10, month=12, year=2022)
-        new_items.append(Transport(date=a_date, container_id=2, aircraft_id=3))
+        new_items.append(Transport(date=a_date, container_id=2, aircraft_id=1))
         session.add_all(new_items)
         session.commit()
 
@@ -39,11 +39,12 @@ def max_id(classparam):
     # d
     with Session(engine) as session:
         records = session.scalars(select(classparam))  # very useful for converting into our data class
-        max = 0
+        maximum = 0
         for record in records:
-            if record.id > max:
-                max = record.id
-    return max
+            if record.id > maximum:
+                maximum = record.id
+    return maximum
+
 
 def get_record(classparam, record_id):  # https://docs.sqlalchemy.org/en/14/tutorial/data_select.html
     # return the record in classparams table with a certain id
@@ -182,7 +183,7 @@ def delete_hard_transport(transport):
 if __name__ == "__main__":  # Executed when invoked directly
     engine = create_engine(Database, echo=False, future=True)  # https://docs.sqlalchemy.org/en/14/tutorial/engine.html   The start of any SQLAlchemy application is an object called the Engine. This object acts as a central source of connections to a particular database, providing both a factory as well as a holding space called a connection pool for these database connections. The engine is typically a global object created just once for a particular database server, and is configured using a URL string which will describe how it should connect to the database host or backend.
     Base.metadata.create_all(engine)
-    # create_test_data_1()
+    # create_test_data()
     # select_all(Container)
     # select_all(Aircraft)
     select_all(Transport)

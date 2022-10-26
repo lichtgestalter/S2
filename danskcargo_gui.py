@@ -20,6 +20,8 @@ INTERNAL_ERROR_CODE = 0
 # endregion global constants
 
 # region container functions
+
+
 def read_container_entries():  # Read content of entry boxes
     return entry_container_id.get(), entry_container_weight.get(), entry_container_destination.get(),
 
@@ -48,6 +50,7 @@ def edit_container(event, tree):  # Copy selected tuple into entry boxes. Parame
 def copy_container_id(event):
     entry_transport_container_id.delete(0, tk.END)
     entry_transport_container_id.insert(0, entry_container_id.get())
+
 
 def create_container(tree, record):  # add new tuple to database
     container = dcd.Container.convert_from_tuple(record)  # Convert tuple to Container
@@ -203,6 +206,7 @@ def update_transport(tree, record):  # update tuple in database
             clear_transport_entries()  # Clear entry boxes
             refresh_treeview(tree, dcd.Transport)  # Refresh treeview table
         else:
+            global INTERNAL_ERROR_CODE
             INTERNAL_ERROR_CODE = 1
             messagebox.showwarning("", "Not enough capacity on aircraft!")
     else:
@@ -241,6 +245,7 @@ def empty_treeview(tree):  # Clear treeview table
     tree.delete(*tree.get_children())
 
 # endregion common functions
+
 
 # region common widgets
 root = tk.Tk()  # Define the main window
