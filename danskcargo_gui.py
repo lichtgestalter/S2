@@ -46,7 +46,6 @@ def edit_container(event, tree):  # Copy selected tuple_ into entry boxes. Param
 
 
 def copy_container_id(event):
-    print("hello this is a test")
     entry_transport_container_id.delete(0, tk.END)
     entry_transport_container_id.insert(0, entry_container_id.get())
 
@@ -110,7 +109,6 @@ def edit_aircraft(event, tree):  # Copy selected tuple_ into entry boxes. Parame
 
 
 def copy_aircraft_id(event):
-    print("hello this is a cat craftaircrafttest")
     entry_transport_aircraft_id.delete(0, tk.END)
     entry_transport_aircraft_id.insert(0, entry_aircraft_id.get())
 
