@@ -248,10 +248,10 @@ def empty_treeview(tree):  # Clear treeview table
 
 
 # region common widgets
-root = tk.Tk()  # Define the main window
-root.title('AspIT S2: DanskCargo')  # Text shown in the top window bar
-root.iconbitmap('AspIT.ico')  # Icon in the upper left corner
-root.geometry("1200x500")  # window size
+main_window = tk.Tk()  # Define the main window
+main_window.title('AspIT S2: DanskCargo')  # Text shown in the top window bar
+main_window.iconbitmap('AspIT.ico')  # Icon in the upper left corner
+main_window.geometry("1200x500")  # window size
 
 style = ttk.Style()  # Add style
 style.theme_use('default')  # Pick theme
@@ -264,7 +264,7 @@ style.map('Treeview', background=[('selected', treeview_selected)])  # Define co
 
 # region container widgets
 # Define Labelframe which contains all container related GUI objects (data table, labels, buttons, ...)
-frame_container = tk.LabelFrame(root, text="Container")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
+frame_container = tk.LabelFrame(main_window, text="Container")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
 frame_container.grid(row=0, column=0, padx=padx, pady=pady, sticky=tk.N)  # https://www.tutorialspoint.com/python/tk_grid.htm
 
 # Define data table (Treeview) and its scrollbar. Put them in a Frame.
@@ -345,7 +345,7 @@ select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 
 # region aircraft widgets
 # Define Labelframe which contains all aircraft related GUI objects (data table, labels, buttons, ...)
-frame_aircraft = tk.LabelFrame(root, text="Aircraft")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
+frame_aircraft = tk.LabelFrame(main_window, text="Aircraft")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
 frame_aircraft.grid(row=0, column=1, padx=padx, pady=pady, sticky=tk.N)  # https://www.tutorialspoint.com/python/tk_grid.htm
 
 # Define data table (Treeview) and its scrollbar. Put them in a Frame.
@@ -413,7 +413,7 @@ select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 
 # regiontransport widgets
 # Define Labelframe which contains all transport related GUI objects (data table, labels, buttons, ...)
-frame_transport = tk.LabelFrame(root, text="Transport")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
+frame_transport = tk.LabelFrame(main_window, text="Transport")  # https://www.tutorialspoint.com/python/tk_labelframe.htm
 frame_transport.grid(row=0, column=2, padx=padx, pady=pady, sticky=tk.N)  # https://www.tutorialspoint.com/python/tk_grid.htm
 
 # Define data table (Treeview) and its scrollbar. Put them in a Frame.
@@ -489,5 +489,5 @@ select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 refresh_treeview(tree_container, dcsql.Container)  # Load data from database
 refresh_treeview(tree_aircraft, dcsql.Aircraft)  # Load data from database
 refresh_treeview(tree_transport, dcsql.Transport)  # Load data from database
-if __name__ == "__main__":  # Executed when invoked directly. We use this so root.mainloop() does not keep our unit tests from running.
-    root.mainloop()  # Wait for button clicks and act upon them
+if __name__ == "__main__":  # Executed when invoked directly. We use this so main_window.mainloop() does not keep our unit tests from running.
+    main_window.mainloop()  # Wait for button clicks and act upon them
