@@ -453,7 +453,6 @@ edit_frame_transport.grid(row=0, column=0, padx=padx, pady=pady)
 label_transport_id = tk.Label(edit_frame_transport, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
 label_transport_id.grid(row=0, column=0, padx=padx, pady=pady)
 entry_transport_id = tk.Entry(edit_frame_transport, width=4, justify="right")  # https://www.tutorialspoint.com/python/tk_entry.htm
-# entry_transport_id = tk.Entry(edit_frame_transport, width=4, justify="tk.RIGHT")  # https://www.tutorialspoint.com/python/tk_entry.htm
 entry_transport_id.grid(row=1, column=0, padx=padx, pady=pady)
 # label and entry for transport weight
 label_transport_date = tk.Label(edit_frame_transport, text="Date")
