@@ -333,14 +333,6 @@ button_delete_container.grid(row=0, column=3, padx=padx, pady=pady)
 select_record_button = tk.Button(button_frame_container, text="Clear Entry Boxes", command=clear_container_entries)
 select_record_button.grid(row=0, column=4, padx=padx, pady=pady)
 
-# Define Frame, Button and Entries for weather check
-# weather_frame = tk.Label(controls_frame_container)
-# weather_frame.grid(row=2, column=0, padx=padx, pady=pady)
-# button_weather = tk.Button(weather_frame, text="Check Weather", command=check_weather)
-# button_weather.grid(row=0, column=0, padx=padx, pady=pady)
-# entry_weather_city = tk.Entry(weather_frame, width=27)
-# entry_weather_city.grid(row=0, column=1, padx=padx, pady=pady)
-
 # endregion container widgets
 
 # region aircraft widgets
