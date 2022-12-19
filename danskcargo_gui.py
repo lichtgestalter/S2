@@ -370,7 +370,7 @@ controls_frame_aircraft = tk.Frame(frame_aircraft)
 controls_frame_aircraft.grid(row=3, column=0, padx=padx, pady=pady)
 
 # Define Frame which contains labels (text fields) and entries (input fields)
-edit_frame_aircraft = tk.Label(controls_frame_aircraft)  # Add tuple entry boxes
+edit_frame_aircraft = tk.Frame(controls_frame_aircraft)  # Add tuple entry boxes
 edit_frame_aircraft.grid(row=0, column=0, padx=padx, pady=pady)
 # label and entry for aircraft id
 label_aircraft_id = tk.Label(edit_frame_aircraft, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
@@ -439,7 +439,7 @@ controls_frame_transport = tk.Frame(frame_transport)
 controls_frame_transport.grid(row=3, column=0, padx=padx, pady=pady)
 
 # Define Frame which contains labels (text fields) and entries (input fields)
-edit_frame_transport = tk.Label(controls_frame_transport)  # Add tuple entry boxes
+edit_frame_transport = tk.Frame(controls_frame_transport)  # Add tuple entry boxes
 edit_frame_transport.grid(row=0, column=0, padx=padx, pady=pady)
 # label and entry for transport id
 label_transport_id = tk.Label(edit_frame_transport, text="Id")  # https://www.tutorialspoint.com/python/tk_label.htm
@@ -463,7 +463,7 @@ entry_transport_aircraft_id = tk.Entry(edit_frame_transport, width=4, justify="r
 entry_transport_aircraft_id.grid(row=1, column=3, padx=padx, pady=pady)
 
 # Define Frame which contains buttons
-button_frame_transport = tk.Label(controls_frame_transport)
+button_frame_transport = tk.Frame(controls_frame_transport)
 button_frame_transport.grid(row=1, column=0, padx=padx, pady=pady)
 # Define buttons
 button_create_transport = tk.Button(button_frame_transport, text="Create", command=lambda: create_transport(tree_transport, read_transport_entries()))
