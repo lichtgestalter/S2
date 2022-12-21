@@ -38,7 +38,6 @@ class TestEmptyEntries(unittest.TestCase):
             session.add_all(new_items)
             session.commit()
         a_date = "8888-11-22"
-        # a_date = date(day=10, month=12, year=9999)
         record = ("", a_date, dcsql.max_id(dcd.Container), dcsql.max_id(dcd.Aircraft))
         # act
         dcg.create_transport(dcg.tree_transport, record)
